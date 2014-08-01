@@ -18,11 +18,16 @@ import org.ocpsoft.rewrite.context.EvaluationContext;
  */
 public class NamedFramesSelector implements FramesSelector
 {
-    private final String varName;
+    private String varName;
 
     public NamedFramesSelector(String varName)
     {
         this.varName = varName;
+    }
+
+    public String getVarName()
+    {
+        return varName;
     }
 
     @Override

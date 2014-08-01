@@ -24,10 +24,21 @@ public class TypeOperation extends AbstractIterationOperation<WindupVertexFrame>
         super(WindupVertexFrame.class, variableName);
         this.newType = newType;
     }
+    
+    private TypeOperation(Class<? extends WindupVertexFrame> newType)
+    {
+        super(WindupVertexFrame.class);
+        this.newType = newType;
+    }
 
     public static GraphOperation addType(String variableName, Class<? extends WindupVertexFrame> newType)
     {
         return new TypeOperation(variableName, newType);
+    }
+    
+    public static GraphOperation addType(Class<? extends WindupVertexFrame> newType)
+    {
+        return new TypeOperation(newType);
     }
 
     @Override
