@@ -25,6 +25,7 @@ import org.jboss.windup.config.operation.iteration.IterationImpl;
 import org.jboss.windup.config.operation.iteration.IterationPayloadManager;
 import org.jboss.windup.config.operation.iteration.NamedFramesSelector;
 import org.jboss.windup.config.operation.iteration.NamedIterationPayloadManager;
+import org.jboss.windup.config.operation.iteration.TypedFramesSelector;
 import org.jboss.windup.config.operation.iteration.TypedNamedFramesSelector;
 import org.jboss.windup.config.operation.iteration.TypedNamedIterationPayloadManager;
 import org.jboss.windup.config.selectors.FramesSelector;
@@ -92,7 +93,7 @@ public abstract class Iteration extends DefaultOperationBuilder
      */
     public static IterationBuilderVar over(Class<? extends WindupVertexFrame> sourceType)
     {
-        IterationImpl iterationImpl = new IterationImpl(new TypedNamedFramesSelector(sourceType, DEFAULT_VARIABLE_LIST_STRING));
+        IterationImpl iterationImpl = new IterationImpl(new TypedFramesSelector(sourceType));
         iterationImpl.setPayloadManager(new TypedNamedIterationPayloadManager(sourceType, DEFAULT_SINGLE_VARIABLE_STRING));
         return iterationImpl;
     }
@@ -189,8 +190,8 @@ public abstract class Iteration extends DefaultOperationBuilder
     public void perform(GraphRewrite event, EvaluationContext context)
     {
         Variables variables = Variables.instance(event);
-        variables.push();
         Iterable<WindupVertexFrame> frames = getSelectionManager().getFrames(event, context);
+        variables.push();
         for (WindupVertexFrame frame : frames)
         {
             getPayloadManager().setCurrentPayload(variables, frame);
