@@ -29,6 +29,19 @@ import org.jboss.windup.rules.apps.xml.model.XmlTypeReferenceModel;
 import org.jboss.windup.util.exception.MarshallingException;
 import org.jboss.windup.util.exception.WindupException;
 import org.jboss.windup.util.xml.LocationAwareContentHandler;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.jboss.forge.furnace.util.Assert;
+import org.jboss.forge.furnace.util.Predicate;
+import org.jboss.windup.config.GraphRewrite;
+import org.jboss.windup.config.condition.GraphCondition;
+import org.jboss.windup.config.operation.Iteration;
+import org.jboss.windup.config.query.Query;
+import org.jboss.windup.config.query.QueryBuilderFind;
+import org.jboss.windup.graph.service.Service;
+import org.jboss.windup.reporting.model.ClassificationModel;
+import org.jboss.windup.rules.apps.xml.model.XmlResourceModel;
 import org.jboss.windup.util.xml.XmlUtil;
 import org.ocpsoft.rewrite.config.Condition;
 import org.ocpsoft.rewrite.config.ConditionBuilder;
@@ -43,7 +56,6 @@ public class XmlFile extends GraphCondition
     protected static final String UNPARSEABLE_XML_CLASSIFICATION = "Unparseable XML File";
     protected static final String UNPARSEABLE_XML_DESCRIPTION = "This file could not be parsed via XPath";
     private String variable = Iteration.DEFAULT_VARIABLE_LIST_STRING;;
-
     private String xpath;
     private Map<String, String> namespaces = new HashMap<>();
     private String fileName;
@@ -64,7 +76,7 @@ public class XmlFile extends GraphCondition
     XmlFile()
     {
     }
-
+    
     /**
      * Create a new {@link XmlFile} {@link Condition}.
      */

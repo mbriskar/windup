@@ -1,9 +1,8 @@
-package org.jboss.windup.rules.apps.java.scan.provider;
-
-import static org.joox.JOOX.$;
+package org.jboss.windup.rules.apps.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -20,11 +19,14 @@ import org.jboss.windup.config.query.QueryPropertyComparisonType;
 import org.jboss.windup.graph.GraphContext;
 import org.jboss.windup.graph.model.resource.FileModel;
 import org.jboss.windup.graph.service.GraphService;
-import org.jboss.windup.rules.apps.java.service.DoctypeMetaService;
-import org.jboss.windup.rules.apps.java.service.NamespaceService;
 import org.jboss.windup.rules.apps.xml.DoctypeMetaModel;
 import org.jboss.windup.rules.apps.xml.NamespaceMetaModel;
 import org.jboss.windup.rules.apps.xml.XmlFileModel;
+import org.jboss.windup.rules.apps.xml.model.DoctypeMetaModel;
+import org.jboss.windup.rules.apps.xml.model.NamespaceMetaModel;
+import org.jboss.windup.rules.apps.xml.model.XmlResourceModel;
+import org.jboss.windup.rules.apps.xml.service.DoctypeMetaService;
+import org.jboss.windup.rules.apps.xml.service.NamespaceService;
 import org.jboss.windup.util.exception.WindupException;
 import org.jboss.windup.util.xml.LocationAwareContentHandler;
 import org.jboss.windup.util.xml.LocationAwareContentHandler.Doctype;
@@ -37,9 +39,11 @@ import org.ocpsoft.rewrite.context.EvaluationContext;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import static org.joox.JOOX.$;
+
 public class DiscoverXmlFilesRuleProvider extends WindupRuleProvider
 {
-    private static final Logger LOG = Logger.getLogger(DiscoverMavenProjectsRuleProvider.class.getSimpleName());
+    private static final Logger LOG = Logger.getLogger(DiscoverXmlFilesRuleProvider.class.getSimpleName());
 
     @Override
     public RulePhase getPhase()
@@ -47,10 +51,12 @@ public class DiscoverXmlFilesRuleProvider extends WindupRuleProvider
         return RulePhase.DISCOVERY;
     }
 
-    @Override
-    public List<Class<? extends WindupRuleProvider>> getExecuteAfter()
+    public List<String> getExecuteAfterIDs()
     {
-        return asClassList(UnzipArchivesToOutputRuleProvider.class, ArchiveTypingRuleProvider.class);
+        List<String> ids = new ArrayList<String>();
+        ids.add("org.jboss.windup.rules.apps:rules-java.UnzipArchivesToOutputRuleProvider");
+        ids.add("org.jboss.windup.rules.apps:rules-java.ArchiveTypingRuleProvider");
+        return ids;
     }
 
     @Override
@@ -144,8 +150,7 @@ public class DiscoverXmlFilesRuleProvider extends WindupRuleProvider
         }
         catch (Exception e)
         {
-            throw new WindupException("Failed to load and parse XML for entity: " + file.getFilePath() + ", due to: "
-                        + e.getMessage(), e);
+            throw new WindupException("Failed to load and parse XML for entity: " + file.getFilePath(), e);
         }
     }
 }

@@ -1,4 +1,4 @@
-package org.jboss.windup.rules.apps.xml;
+package org.jboss.windup.rules.apps.xml.model;
 
 import java.io.InputStream;
 
@@ -15,39 +15,31 @@ import com.tinkerpop.frames.modules.javahandler.JavaHandler;
 import com.tinkerpop.frames.modules.javahandler.JavaHandlerContext;
 import com.tinkerpop.frames.modules.typedgraph.TypeValue;
 
-@TypeValue(XmlFileModel.TYPE)
-public interface XmlFileModel extends FileModel
+@TypeValue("XmlResource")
+public interface XmlResourceModel extends FileModel
 {
-    public static final String UNPARSEABLE_XML_CLASSIFICATION = "Unparseable XML File";
-    public static final String UNPARSEABLE_XML_DESCRIPTION = "This file could not be parsed";
-
-    public static final String ROOT_TAG_NAME = "rootTagName";
-    public static final String NAMESPACE = "namespace";
-    public static final String DOCTYPE = "doctype";
-    public static final String TYPE = "XmlFileModel";
-
-    @Adjacency(label = DOCTYPE, direction = Direction.OUT)
+    @Adjacency(label = "doctype", direction = Direction.OUT)
     public void setDoctype(DoctypeMetaModel doctype);
 
-    @Adjacency(label = DOCTYPE, direction = Direction.OUT)
+    @Adjacency(label = "doctype", direction = Direction.OUT)
     public DoctypeMetaModel getDoctype();
 
-    @Adjacency(label = NAMESPACE, direction = Direction.OUT)
+    @Adjacency(label = "namespace", direction = Direction.OUT)
     public void addNamespace(NamespaceMetaModel namespace);
 
-    @Adjacency(label = NAMESPACE, direction = Direction.OUT)
+    @Adjacency(label = "namespace", direction = Direction.OUT)
     public Iterable<NamespaceMetaModel> getNamespaces();
 
-    @Property(ROOT_TAG_NAME)
+    @Property("rootTagName")
     public String getRootTagName();
 
-    @Property(ROOT_TAG_NAME)
+    @Property("rootTagName")
     public void setRootTagName(String rootTagName);
 
     @JavaHandler
     public Document asDocument();
 
-    abstract class Impl implements XmlFileModel, JavaHandlerContext<Vertex>
+    abstract class Impl implements XmlResourceModel, JavaHandlerContext<Vertex>
     {
 
         @Override

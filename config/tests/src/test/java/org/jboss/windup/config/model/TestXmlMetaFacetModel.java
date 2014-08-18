@@ -1,7 +1,8 @@
 package org.jboss.windup.config.model;
 
 import org.jboss.windup.graph.model.WindupVertexFrame;
-import org.jboss.windup.rules.apps.xml.XmlFileModel;
+import org.jboss.windup.rules.apps.xml.model.XmlFileModel;
+import org.jboss.windup.rules.apps.xml.model.XmlResourceModel;
 
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.frames.Adjacency;
