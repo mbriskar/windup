@@ -165,7 +165,6 @@ public class XSLTTransformation extends AbstractIterationOperation<XmlResourceMo
                 }
                 
             });
-            
             if (xsltParameters != null)
             {
                 for (String key : xsltParameters.keySet())
