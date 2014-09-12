@@ -54,7 +54,8 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                     .addRule()
                     .when(XmlFile.matchesXpath("/jpa:persistence[@version='1.0'] | /persistence[@version='1.0']")
                                 .namespace("jpa", "http://java.sun.com/xml/ns/persistence").as("JPA1"))
-                    .perform(Classification
+                    .perform(Iteration.over("JPA1").perform(
+                                Classification.of("JPA1")
                                 .as("JPA 1.x Configuration")
                                 .withEffort(0)
                                 .and(Iteration
@@ -288,13 +289,15 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                                 "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
 
                                             .endIteration())
+                            ).endIteration()
 
                     )
 
                     .addRule()
                     .when(XmlFile.matchesXpath("/jpa:persistence[@version='2.0'] | /persistence[@version='2.0']")
                                 .namespace("jpa", "http://java.sun.com/xml/ns/persistence").as("JPA2"))
-                    .perform(Classification
+                    .perform(Iteration.over("JPA2").perform(
+                                Classification
                                 .as("JPA 2.x Configuration")
                                 .withEffort(0)
 
@@ -537,7 +540,7 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .withText(
                                                                                 "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
 
-                                            .endIteration()))
+                                            .endIteration())).endIteration())
 
                     .addRule()
                     .when(XmlFile.matchesXpath("/hibernate-mapping"))
