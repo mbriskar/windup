@@ -151,7 +151,7 @@ public class XMLTransformationTest
         @Override
         public RulePhase getPhase()
         {
-            return RulePhase.MIGRATION_RULES;
+            return RulePhase.POST_MIGRATION_RULES;
         }
 
         // @formatter:off
