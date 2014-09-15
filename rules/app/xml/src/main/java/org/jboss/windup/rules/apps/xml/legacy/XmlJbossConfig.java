@@ -3,6 +3,7 @@ package org.jboss.windup.rules.apps.xml.legacy;
 import org.jboss.windup.config.RulePhase;
 import org.jboss.windup.config.WindupRuleProvider;
 import org.jboss.windup.config.metadata.RuleMetadata;
+import org.jboss.windup.config.operation.Iteration;
 import org.jboss.windup.graph.GraphContext;
 import org.jboss.windup.reporting.config.Classification;
 import org.jboss.windup.reporting.config.Hint;
@@ -103,9 +104,9 @@ public class XmlJbossConfig extends WindupRuleProvider
                     .perform(Classification.as("JBoss Seam Page"))
                     .addRule()
                     .when(XmlFile.matchesXpath("jboss-app").as("jboss-app").and(XmlFile.matchesXpath("jboss-app").withDTDPublicId("").as("jboss-app-no-DTD")))
-                    .perform(Classification.of("jboss-app").as("Jboss App Descriptor")
-                                .and(Classification.of("jboss-app-no-DTD").as("Jboss App XML with missing DTD detect").withEffort(1))
-                                .and(XSLTTransformation.of("jboss-app-no-DTD").using("transformations/xslt/jboss-app-to-jboss5.xsl").withDescription("JBoss APP Descriptor - JBoss 5 (Windup-Generated)").withExtension("-jboss5.xml")))
+                    .perform(Iteration.over("jboss-app").perform(Classification.as("Jboss App Descriptor")).endIteration()
+                                .and(Iteration.over("jboss-app-no-DTD").perform(Classification.as("Jboss App XML with missing DTD detect").withEffort(1)).endIteration())
+                                .and(Iteration.over("jboss-app-no-DTD").perform(XSLTTransformation.using("transformations/xslt/jboss-app-to-jboss5.xsl").withDescription("JBoss APP Descriptor - JBoss 5 (Windup-Generated)").withExtension("-jboss5.xml")).endIteration()))
                     .addRule()
                     .when(XmlFile.matchesXpath("server/mbean[@code='org.jboss.mq.server.jmx.Queue']"))
                     .perform(Classification.as("JBoss 4 JMS Configuration").withEffort(2)

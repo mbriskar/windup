@@ -55,7 +55,7 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                     .when(XmlFile.matchesXpath("/jpa:persistence[@version='1.0'] | /persistence[@version='1.0']")
                                 .namespace("jpa", "http://java.sun.com/xml/ns/persistence").as("JPA1"))
                     .perform(Iteration.over("JPA1").perform(
-                                Classification.of("JPA1")
+                                Classification
                                 .as("JPA 1.x Configuration")
                                 .withEffort(0)
                                 .and(Iteration
@@ -69,12 +69,11 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "weblogic.ant.taskdefs.webservices.servicegen.ServiceGenTask$ | weblogic.ant.taskdefs.webservices.javaschema.JavaSchema$ | weblogic.ant.taskdefs.webservices.autotype.JavaSource2DD$ | weblogic.ant.taskdefs.webservices.clientgen.ClientGenTask$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
+                                            .perform(Iteration.over("1").perform(Hint
                                                         .withText("Weblogic Specifc Webservice Ant Tasks")
-                                                        .withEffort(10)
-                                                        .and(Hint.in("2").withText(
-                                                                    "Replace with Apache CXF Ant Tasks or Annotations")))
+                                                        .withEffort(10)).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint.withText(
+                                                                    "Replace with Apache CXF Ant Tasks or Annotations")).endIteration()))
 
                                             .endIteration())
 
@@ -89,13 +88,12 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.JOnASTransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
+                                            .perform(Iteration.over("1").perform(Hint
                                                         .withText("JOnAS Specific")
-                                                        .withEffort(1)
-                                                        .and(Hint.in("2")
+                                                        .withEffort(1)).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
 
                                             .endIteration())
                                 .and(Iteration
@@ -109,13 +107,12 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.JOTMTransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
+                                            .perform(Iteration.over("1").perform(Hint
                                                         .withText("JOTM Specific")
-                                                        .withEffort(1)
-                                                        .and(Hint.in("2")
+                                                        .withEffort(1)).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
 
                                             .endIteration())
                                 .and(Iteration
@@ -129,13 +126,12 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.WebSphereExtendedJTATransactionLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
+                                            .perform(Iteration.over("1").perform(Hint
                                                         .withText("Websphere Specific")
-                                                        .withEffort(1)
-                                                        .and(Hint.in("2")
+                                                        .withEffort(1)).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
                                             .endIteration())
                                 .and(Iteration
                                             .over("JPA1")
@@ -148,13 +144,12 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.WebSphereTransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
+                                            .perform(Iteration.over("1").perform(Hint
                                                         .withText("Websphere Specific")
-                                                        .withEffort(1)
-                                                        .and(Hint.in("2")
+                                                        .withEffort(1)).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
                                             .endIteration())
                                 .and(Iteration
                                             .over("JPA1")
@@ -167,13 +162,12 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.WeblogicTransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
+                                            .perform(Iteration.over("1").perform(Hint
                                                         .withText("Weblogic Specific")
-                                                        .withEffort(1)
-                                                        .and(Hint.in("2")
+                                                        .withEffort(1)).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
 
                                             .endIteration())
 
@@ -188,12 +182,11 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.BESTransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
-                                                        .withText("Borland ES Specific")
-                                                        .and(Hint.in("2")
+                                            .perform(Iteration.over("1").perform(Hint
+                                                        .withText("Borland ES Specific")).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
 
                                             .endIteration())
                                 .and(Iteration
@@ -207,12 +200,11 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.JRun4TransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
-                                                        .withText("JRun4 AS Specific")
-                                                        .and(Hint.in("2")
+                                            .perform(Iteration.over("1").perform(Hint
+                                                        .withText("JRun4 AS Specific")).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
 
                                             .endIteration())
                                 .and(Iteration
@@ -226,12 +218,11 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.OC4JTransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
-                                                        .withText("OC4J (Oracle) AS Specific")
-                                                        .and(Hint.in("2")
+                                            .perform(Iteration.over("1").perform(Hint
+                                                        .withText("OC4J (Oracle) AS Specific")).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
                                             .endIteration())
                                 .and(Iteration
                                             .over("JPA1")
@@ -244,12 +235,11 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.OrionTransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
-                                                        .withText("Orion Specific")
-                                                        .and(Hint.in("2")
+                                            .perform(Iteration.over("1").perform(Hint
+                                                        .withText("Orion Specific")).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
 
                                             .endIteration())
                                 .and(Iteration
@@ -263,12 +253,11 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.ResinTransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
-                                                        .withText("Resin Specific")
-                                                        .and(Hint.in("2")
+                                            .perform(Iteration.over("1").perform(Hint
+                                                        .withText("Resin Specific")).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
                                             .endIteration())
                                 .and(Iteration
                                             .over("JPA1")
@@ -281,12 +270,11 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.SunONETransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
-                                                        .withText("Sun ONE Application Server Specific")
-                                                        .and(Hint.in("2")
+                                            .perform(Iteration.over("1").perform(Hint
+                                                        .withText("Sun ONE Application Server Specific")).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
 
                                             .endIteration())
                             ).endIteration()
@@ -313,12 +301,11 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "weblogic.ant.taskdefs.webservices.servicegen.ServiceGenTask$ | weblogic.ant.taskdefs.webservices.javaschema.JavaSchema$ | weblogic.ant.taskdefs.webservices.autotype.JavaSource2DD$ | weblogic.ant.taskdefs.webservices.clientgen.ClientGenTask$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
+                                            .perform(Iteration.over("1").perform(Hint
                                                         .withText("Weblogic Specifc Webservice Ant Tasks")
-                                                        .withEffort(10)
-                                                        .and(Hint.in("2").withText(
-                                                                    "Replace with Apache CXF Ant Tasks or Annotations")))
+                                                        .withEffort(10)).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint.withText(
+                                                                    "Replace with Apache CXF Ant Tasks or Annotations")).endIteration()))
 
                                             .endIteration())
 
@@ -333,13 +320,12 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.JOnASTransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
-                                                        .withText("JOnAS Specific")
-                                                        .withEffort(1)
-                                                        .and(Hint.in("2")
-                                                                    .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                            .perform(Iteration.over("1").perform(
+                                                        Hint.withText("JOnAS Specific").withEffort(1)
+                                                        ).endIteration()
+                                                        .and(Iteration.over("2").perform(
+                                                                    Hint.withText("Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")
+                                                                    ).endIteration()))
 
                                             .endIteration())
                                 .and(Iteration
@@ -353,13 +339,12 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.JOTMTransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
+                                            .perform(Iteration.over("1").perform(Hint
                                                         .withText("JOTM Specific")
-                                                        .withEffort(1)
-                                                        .and(Hint.in("2")
+                                                        .withEffort(1)).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
 
                                             .endIteration())
                                 .and(Iteration
@@ -373,13 +358,12 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.WebSphereExtendedJTATransactionLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
+                                            .perform(Iteration.over("1").perform(Hint
                                                         .withText("Websphere Specific")
-                                                        .withEffort(1)
-                                                        .and(Hint.in("2")
+                                                        .withEffort(1)).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
                                             .endIteration())
                                 .and(Iteration
                                             .over("JPA2")
@@ -393,13 +377,12 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.WebSphereTransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
+                                            .perform(Iteration.over("1").perform(Hint
                                                         .withText("Websphere Specific")
-                                                        .withEffort(1)
-                                                        .and(Hint.in("2")
+                                                        .withEffort(1)).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
                                             .endIteration())
                                 .and(Iteration
                                             .over("JPA2")
@@ -413,13 +396,12 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.WeblogicTransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
+                                            .perform(Iteration.over("1").perform(Hint
                                                         .withText("Weblogic Specific")
-                                                        .withEffort(1)
-                                                        .and(Hint.in("2")
+                                                        .withEffort(1)).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
 
                                             .endIteration())
 
@@ -435,12 +417,11 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.BESTransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
-                                                        .withText("Borland ES Specific")
-                                                        .and(Hint.in("2")
+                                            .perform(Iteration.over("1").perform(Hint
+                                                        .withText("Borland ES Specific")).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
 
                                             .endIteration())
                                 .and(Iteration
@@ -455,12 +436,11 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.JRun4TransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
-                                                        .withText("JRun4 AS Specific")
-                                                        .and(Hint.in("2")
+                                            .perform(Iteration.over("1").perform(Hint
+                                                        .withText("JRun4 AS Specific")).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
 
                                             .endIteration())
                                 .and(Iteration
@@ -475,12 +455,11 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.OC4JTransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
-                                                        .withText("OC4J (Oracle) AS Specific")
-                                                        .and(Hint.in("2")
+                                            .perform(Iteration.over("1").perform(Hint
+                                                        .withText("OC4J (Oracle) AS Specific")).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
                                             .endIteration())
                                 .and(Iteration
                                             .over("JPA2")
@@ -494,12 +473,11 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.OrionTransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
-                                                        .withText("Orion Specific")
-                                                        .and(Hint.in("2")
+                                            .perform(Iteration.over("1").perform(Hint
+                                                        .withText("Orion Specific")).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
 
                                             .endIteration())
                                 .and(Iteration
@@ -514,12 +492,11 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.ResinTransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
-                                                        .withText("Resin Specific")
-                                                        .and(Hint.in("2")
+                                            .perform(Iteration.over("1").perform(Hint
+                                                        .withText("Resin Specific")).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
                                             .endIteration())
                                 .and(Iteration
                                             .over("JPA2")
@@ -533,12 +510,11 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.SunONETransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
-                                                        .withText("Sun ONE Application Server Specific")
-                                                        .and(Hint.in("2")
+                                            .perform(Iteration.over("1").perform(Hint
+                                                        .withText("Sun ONE Application Server Specific")).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
 
                                             .endIteration())).endIteration())
 
@@ -551,23 +527,25 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                     .addRule()
                     .when(XmlFile.matchesXpath("/hibernate-mapping/class/@outer-join").as("1")
                                 .and(XmlFile.from("1").matchesXpath("/hibernate-mapping/class/@outer-join").resultMatches("outer-join").as("2")))
-                    .perform(Classification
+                    .perform(Iteration.over("1").perform(Classification
                                 .as("Outer-Join Property Tag")
-                                .withEffort(1)
-                                .and(Hint.in("2").withText(
-                                            "Outer Join tag deprecated, use fetch='join'and fetch='select' instead")))
+                                .withEffort(1)).endIteration()
+                                .and(Iteration.over("2").perform(Hint.withText(
+                                            "Outer Join tag deprecated, use fetch='join'and fetch='select' instead"))
+                                            .endIteration()))
                     .addRule()
                     .when(XmlFile.matchesXpath("/hibernate-mapping/class/@unused-value").as("1")
                                 .and(XmlFile.from("1").matchesXpath("/hibernate-mapping/class/@unused-value").resultMatches("unused-value").as("2")))
-                    .perform(Classification
+                    .perform(Iteration.over("1").perform(Classification
                                 .as("Unused-Value Property Tag")
-                                .withEffort(0)
-                                .and(Hint.in("2")
-                                            .withText("Unused Value is now optional, Hibernate will set equal to 0 where sensible.")))
+                                .withEffort(0)).endIteration()
+                                .and(Iteration.over("2").perform(Hint
+                                            .withText("Unused Value is now optional, Hibernate will set equal to 0 where sensible.")).endIteration()))
+                                            
                     .addRule()
                     .when(XmlFile.matchesXpath("/hibernate-configuration").as("hibernate"))
-                    .perform(Classification
-                                .as("Hibernate Configuration")
+                    .perform(Iteration.over("hibernate").perform(Classification
+                                .as("Hibernate Configuration")).endIteration()
 
                                 .and(Iteration
                                             .over("JPA1")
@@ -580,13 +558,12 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.JOnASTransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
+                                            .perform(Iteration.over("1").perform(Hint
                                                         .withText("JOnAS Specific")
-                                                        .withEffort(1)
-                                                        .and(Hint.in("2")
+                                                        .withEffort(1)).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
                                             .endIteration())
 
                                 .and(Iteration
@@ -601,13 +578,12 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.JOTMTransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
+                                            .perform(Iteration.over("1").perform(Hint
                                                         .withText("JOTM Specific")
-                                                        .withEffort(1)
-                                                        .and(Hint.in("2")
+                                                        .withEffort(1)).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
 
                                             .endIteration())
                                 .and(Iteration
@@ -622,13 +598,12 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.WebSphereExtendedJTATransactionLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
+                                            .perform(Iteration.over("1").perform(Hint
                                                         .withText("Websphere Specific")
-                                                        .withEffort(1)
-                                                        .and(Hint.in("2")
+                                                        .withEffort(1)).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
 
                                             .endIteration())
                                 .and(Iteration
@@ -643,13 +618,12 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.WebSphereTransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
+                                            .perform(Iteration.over("1").perform(Hint
                                                         .withText("Websphere Specific")
-                                                        .withEffort(1)
-                                                        .and(Hint.in("2")
+                                                        .withEffort(1)).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
                                             .endIteration())
                                 .and(Iteration
                                             .over("JPA1")
@@ -663,13 +637,12 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.WeblogicTransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
+                                            .perform(Iteration.over("1").perform(Hint
                                                         .withText("Weblogic Specific")
-                                                        .withEffort(1)
-                                                        .and(Hint.in("2")
+                                                        .withEffort(1)).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
                                             .endIteration())
                                 .and(Iteration
                                             .over("JPA1")
@@ -683,12 +656,11 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.BESTransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
-                                                        .withText("Borland ES Specific")
-                                                        .and(Hint.in("2")
+                                            .perform(Iteration.over("1").perform(Hint
+                                                        .withText("Borland ES Specific")).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
 
                                             .endIteration())
 
@@ -704,12 +676,11 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.JRun4TransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
-                                                        .withText("JRun4 AS Specific")
-                                                        .and(Hint.in("2")
+                                            .perform(Iteration.over("1").perform(Hint
+                                                        .withText("JRun4 AS Specific")).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
 
                                             .endIteration())
                                 .and(Iteration
@@ -724,12 +695,11 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.OC4JTransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
-                                                        .withText("OC4J (Oracle) AS Specific")
-                                                        .and(Hint.in("2")
+                                            .perform(Iteration.over("1").perform(Hint
+                                                        .withText("OC4J (Oracle) AS Specific")).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
                                             .endIteration())
                                 .and(Iteration
                                             .over("JPA1")
@@ -743,12 +713,11 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.OrionTransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
-                                                        .withText("Orion Specific")
-                                                        .and(Hint.in("2")
+                                            .perform(Iteration.over("1").perform(Hint
+                                                        .withText("Orion Specific")).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
                                             .endIteration())
                                 .and(Iteration
                                             .over("JPA1")
@@ -762,12 +731,11 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.ResinTransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
-                                                        .withText("Resin Specific")
-                                                        .and(Hint.in("2")
+                                            .perform(Iteration.over("1").perform(Hint
+                                                        .withText("Resin Specific")).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
 
                                             .endIteration())
                                 .and(Iteration
@@ -782,33 +750,34 @@ public class XmlPersistanceConfig extends WindupRuleProvider
                                                                     .resultMatches(
                                                                                 "org.hibernate.transaction.SunONETransactionManagerLookup$")
                                                                     .as("2")))
-                                            .perform(Hint
-                                                        .in("1")
-                                                        .withText("Sun ONE Application Server Specific")
-                                                        .and(Hint.in("2")
+                                            .perform(Iteration.over("1").perform(Hint
+                                                        .withText("Sun ONE Application Server Specific")).endIteration()
+                                                        .and(Iteration.over("2").perform(Hint
                                                                     .withText(
-                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")))
+                                                                                "Replace with: org.hibernate.transaction.JBossTransactionManagerLookup")).endIteration()))
                                             .endIteration())
 
                     )
                     .addRule()
                     .when(XmlFile.matchesXpath("/hibernate-mapping/class/index").as("1")
                                 .and(XmlFile.from("1").matchesXpath("/hibernate-mapping/class/index").resultMatches("index").as("2")))
-                    .perform(Classification
+                    .perform(Iteration.over("1").perform(Classification
                                 .as("Index Expression Semi-Deprecated")
-                                .withEffort(1)
-                                .and(Hint.in("2").withText(
-                                            "Index is now semi-deprecated. list-index and map-key preferred.")))
+                                .withEffort(1)).endIteration()
+                                .and(Iteration.over("2").perform(Hint.withText(
+                                            "Index is now semi-deprecated. list-index and map-key preferred.")).endIteration()))
                     .addRule()
                     .when(XmlFile.matchesXpath("/hibernate-mapping/class/key-many-to-many").as("1")
                                 .and(XmlFile.from("1").matchesXpath("/hibernate-mapping/class/key-many-to-many").resultMatches("key-many-to-many").as("2")))
-                    .perform(Classification.as("Key-many-to-many tag").withEffort(1)
-                                .and(Hint.in("2").withText("map-key-many-to-many preferred over key-many-to-many")))
+                    .perform(Iteration.over("1").perform(Classification.as("Key-many-to-many tag").withEffort(1)
+                                .and(Iteration.over("2").perform(Hint.withText("map-key-many-to-many preferred over key-many-to-many")).endIteration()))
+                                .endIteration())
+                                
                     .addRule()
                     .when(XmlFile.matchesXpath("/hibernate-mapping/class/composite-index").as("1")
                                 .and(XmlFile.from("1").matchesXpath("/hibernate-mapping/class/composite-index").resultMatches("composite-index").as("2")))
-                    .perform(Classification.as("Composite-index tag").withEffort(1)
-                                .and(Hint.in("2").withText("composite-map-key preferred over composite-index")));
+                    .perform(Iteration.over("1").perform(Classification.as("Composite-index tag").withEffort(1)
+                                .and(Iteration.over("2").perform(Hint.withText("composite-map-key preferred over composite-index")).endIteration())).endIteration());
 
         return configuration;
     }

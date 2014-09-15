@@ -3,6 +3,7 @@ package org.jboss.windup.rules.apps.xml.legacy;
 import org.jboss.windup.config.RulePhase;
 import org.jboss.windup.config.WindupRuleProvider;
 import org.jboss.windup.config.metadata.RuleMetadata;
+import org.jboss.windup.config.operation.Iteration;
 import org.jboss.windup.graph.GraphContext;
 import org.jboss.windup.reporting.config.Classification;
 import org.jboss.windup.reporting.config.Hint;
@@ -63,9 +64,9 @@ public class XmlWebserviceConfig extends WindupRuleProvider
                                             .namespace("j2e", "http://java.sun.com/xml/ns/j2ee").as("2"))
                                 .and(XmlFile.from("1").matchesXpath("//jee:service-endpoint-interface | //j2e:service-endpoint-interface").namespace("jee", "http://java.sun.com/xml/ns/javaee")
                                             .namespace("j2e", "http://java.sun.com/xml/ns/j2ee").as("3")))
-                    .perform(Classification.of("1").as("Java Webservice Configuration").withEffort(0)
-                                .and(Hint.in("2").withText("Handler Class"))
-                                .and(Hint.in("3").withText("Service Interface")))
+                    .perform(Iteration.over("1").perform(Classification.as("Java Webservice Configuration").withEffort(0)).endIteration()
+                                .and(Iteration.over("2").perform(Hint.withText("Handler Class")).endIteration())
+                                .and(Iteration.over("3").perform(Hint.withText("Service Interface")).endIteration()))
                     .addRule()
                     .when(XmlFile.matchesXpath("/cxf:extensions").namespace("cxf",
                                 "http://cxf.apache.org/bus/extension"))

@@ -3,6 +3,7 @@ package org.jboss.windup.rules.apps.xml.legacy;
 import org.jboss.windup.config.RulePhase;
 import org.jboss.windup.config.WindupRuleProvider;
 import org.jboss.windup.config.metadata.RuleMetadata;
+import org.jboss.windup.config.operation.Iteration;
 import org.jboss.windup.graph.GraphContext;
 import org.jboss.windup.reporting.config.Classification;
 import org.jboss.windup.reporting.config.Hint;
@@ -41,10 +42,10 @@ public class XmlWeblogicConfig extends WindupRuleProvider
                                 "http://xmlns.oracle.com/weblogic/weblogic-ejb-jar").as("1")
                                 .and(XmlFile.from("1").matchesXpath("//*[@value='delay-updates-until-end-of-tx']/text()").as("2"))
                                 .and(XmlFile.from("2").withDTDPublicId("delay-updates-until-end-of-tx$").as("3")))
-                    .perform(Classification.of("1").as("Weblogic Entity EJB Configuration").withEffort(3)
-                                .and(Hint.in("2").withText("Weblogic Specific Transaction Property Delay Updates"))
-                                .and(Hint.in("3").withText("In EAP6 replace with: &lt;sync-on-commit-only&gt; in jbosscmp-jdbc.xml"))
-                                .and(XSLTTransformation.of("1").using("transformations/xslt/weblogic-entity2-to-jboss.xsl").withDescription("JBoss EJB CMP Descriptor (Windup-Generated)").withExtension("-jbosscmp-jdbc.xml")))
+                    .perform(Iteration.over("1").perform(Classification.as("Weblogic Entity EJB Configuration").withEffort(3)).endIteration()
+                                .and(Iteration.over("2").perform(Hint.withText("Weblogic Specific Transaction Property Delay Updates")).endIteration())
+                                .and(Iteration.over("3").perform(Hint.withText("In EAP6 replace with: &lt;sync-on-commit-only&gt; in jbosscmp-jdbc.xml")).endIteration())
+                                .and(Iteration.over("1").perform(XSLTTransformation.using("transformations/xslt/weblogic-entity2-to-jboss.xsl").withDescription("JBoss EJB CMP Descriptor (Windup-Generated)").withExtension("-jbosscmp-jdbc.xml")).endIteration()))
                     .addRule()
                     .when(XmlFile.matchesXpath("/weblogic-ejb-jar"))
                     .perform(Classification.as("Weblogic EJB XML").withEffort(3)
@@ -82,8 +83,8 @@ public class XmlWeblogicConfig extends WindupRuleProvider
                                 .and(XmlFile.from("1").matchesXpath("//wl:webservice-type | //wl9:webservice-type")
                                             .namespace("wl", "http://www.bea.com/ns/weblogic/weblogic-webservices")
                                             .namespace("wl9", "http://www.bea.com/ns/weblogic/90").as("2")))
-                    .perform(Classification.of("1").as("Weblogic Webservice Descriptor")
-                                .and(Hint.in("2").withText("Webservice Type")))
+                    .perform(Iteration.over("1").perform(Classification.as("Weblogic Webservice Descriptor")).endIteration()
+                                .and(Iteration.over("2").perform(Hint.withText("Webservice Type")).endIteration()))
                     
                     .addRule()
                     .when(XmlFile.matchesXpath("/*[local-name()='weblogic-jms']"))

@@ -3,6 +3,7 @@ package org.jboss.windup.rules.apps.xml.legacy;
 import org.jboss.windup.config.RulePhase;
 import org.jboss.windup.config.WindupRuleProvider;
 import org.jboss.windup.config.metadata.RuleMetadata;
+import org.jboss.windup.config.operation.Iteration;
 import org.jboss.windup.graph.GraphContext;
 import org.jboss.windup.reporting.config.Classification;
 import org.jboss.windup.reporting.config.Hint;
@@ -88,11 +89,11 @@ public class XmlJppConfig extends WindupRuleProvider
                                             .namespace("je", "http://java.sun.com/JSF/Configuration")
                                             .resultMatches("org.jboss.portletbridge.application.PortletViewHandler")
                                             .as("2")))
-                    .perform(Hint.in("1")
-                                .withText("PortletBridge View Handler")
-                                .and(Hint.in("2")
+                    .perform(Iteration.over("1").perform(Hint
+                                .withText("PortletBridge View Handler")).endIteration()
+                                .and(Iteration.over("2").perform(Hint
                                             .withText("Remove this entry, as it's not needed by Red Hat JBoss Portal 6.x")
-                                            .withEffort(1)))
+                                            .withEffort(1)).endIteration()))
                     .addRule()
                     .when(XmlFile.matchesXpath(
                                             "/jee:faces-config/jee:application/jee:state-manager/text()[contains(., 'org.jboss.portletbridge.application.PortletStateManager')] | /je:faces-config/je:application/je:state-manager/text()[contains(., 'org.jboss.portletbridge.application.PortletStateManager')] | /faces-config/application/state-manager/text()[contains(., 'org.jboss.portletbridge.application.PortletStateManager')]")
@@ -105,20 +106,20 @@ public class XmlJppConfig extends WindupRuleProvider
                                 .namespace("je", "http://java.sun.com/JSF/Configuration")
                                             .resultMatches("org.jboss.portletbridge.application.PortletStateManager")
                                             .as("2")))
-                    .perform(Hint.in("1")
-                                .withText("PortletBridge State Manager")
-                                .and(Hint.in("2")
+                    .perform(Iteration.over("1").perform(Hint
+                                .withText("PortletBridge State Manager")).endIteration()
+                                .and(Iteration.over("2").perform(Hint
                                             .withText("Remove this entry, as it's not needed by Red Hat JBoss Portal 6.x")
-                                            .withEffort(1)))
+                                            .withEffort(1)).endIteration()))
                     .addRule()
                     .when(XmlFile.matchesXpath("/application/module/java/text()").as("1")
                                 .and(XmlFile.from("1").matchesXpath("/application/module/java/text()").resultMatches(".*jar$").as("2")))
-                    .perform(Hint.in("1")
+                    .perform(Iteration.over("1").perform(Hint
                                 .withText("Portal library")
-                                .withEffort(1)
-                                .and(Hint.in("2")
+                                .withEffort(1)).endIteration()
+                                .and(Iteration.over("2").perform(Hint
                                             .withText("Move the library to the EAR's lib directory. See https://access.redhat.com/site/documentation/en-US/Red_Hat_JBoss_Portal/6.0/html/Migration_Guide/ar01s06.html")
-                                            .withEffort(0)))
+                                            .withEffort(0)).endIteration()))
                     .addRule()
                     .when(XmlFile.matchesXpath(
                                             "//*[starts-with(., 'org.jboss.portal.portlet.impl.jsr168.taglib')]/text()")
@@ -127,11 +128,11 @@ public class XmlJppConfig extends WindupRuleProvider
                                             "//*[starts-with(., 'org.jboss.portal.portlet.impl.jsr168.taglib')]/text()")
                                             .resultMatches("org.jboss.portal.portlet.impl.jsr168.taglib.*")
                                             .as("2")))
-                    .perform(Hint.in("1")
-                                .withText("PortletBridge org.jboss.portal.portlet.impl.jsr168.taglib moved")
-                                .and(Hint.in("2")
+                    .perform(Iteration.over("1").perform(Hint
+                                .withText("PortletBridge org.jboss.portal.portlet.impl.jsr168.taglib moved")).endIteration()
+                                .and(Iteration.over("2").perform(Hint
                                             .withText("This package has been moved to org.gatein.pc.portlet.impl.jsr168.taglib")
-                                            .withEffort(1)))
+                                            .withEffort(1)).endIteration()))
                     .addRule()
                     .when(XmlFile.matchesXpath(
                                             "//*[starts-with(., 'org.exoplatform.web.login.InitiateLoginServlet')]/text()")
@@ -139,42 +140,42 @@ public class XmlJppConfig extends WindupRuleProvider
                                 .and(XmlFile.from("1").matchesXpath(
                                             "//*[starts-with(., 'org.exoplatform.web.login.InitiateLoginServlet')]/text()").resultMatches("org.exoplatform.web.login.InitiateLoginServlet")
                                             .as("2")))
-                    .perform(Hint.in("1")
-                                .withText("Class org.exoplatform.web.login.InitiateLoginServlet moved")
-                                .and(Hint.in("2")
+                    .perform(Iteration.over("1").perform(Hint
+                                .withText("Class org.exoplatform.web.login.InitiateLoginServlet moved")).endIteration()
+                                .and(Iteration.over("2").perform(Hint
                                             .withText("This class was removed in Red Hat JBoss Portal Platform 6. See the web.xml/login.jsp from the sample-portal quickstart for an example on how to deal with authentication/authorization on this version.")
-                                            .withEffort(1)))
+                                            .withEffort(1)).endIteration()))
                     .addRule()
                     .when(XmlFile.matchesXpath("//*[starts-with(., 'org.exoplatform.web.login.DoLoginServlet')]/text()")
                                 .as("1")
                                 .and(XmlFile.from("1").matchesXpath("//*[starts-with(., 'org.exoplatform.web.login.DoLoginServlet')]/text()").resultMatches("org.exoplatform.web.login.DoLoginServlet")
                                             .as("2")))
-                    .perform(Hint.in("1")
-                                .withText("Class org.exoplatform.web.login.DoLoginServlet moved")
-                                .and(Hint.in("2")
+                    .perform(Iteration.over("1").perform(Hint
+                                .withText("Class org.exoplatform.web.login.DoLoginServlet moved")).endIteration()
+                                .and(Iteration.over("2").perform(Hint
                                             .withText("This class was removed in Red Hat JBoss Portal Platform 6. See the web.xml/login.jsp from the sample-portal quickstart for an example on how to deal with authentication/authorization on this version.")
-                                            .withEffort(1)))
+                                            .withEffort(1)).endIteration()))
                     .addRule()
                     .when(XmlFile.matchesXpath("//*[starts-with(., 'org.exoplatform.web.login.ErrorLoginServlet')]/text()")
                                 .as("1")
                                 .and(XmlFile.from("1").matchesXpath("//*[starts-with(., 'org.exoplatform.web.login.ErrorLoginServlet')]/text()").resultMatches("org.exoplatform.web.login.ErrorLoginServlet")
                                             .as("2")))
-                    .perform(Hint.in("1")
-                                .withText("Class org.exoplatform.web.login.ErrorLoginServlet moved")
-                                .and(Hint.in("2")
+                    .perform(Iteration.over("1").perform(Hint
+                                .withText("Class org.exoplatform.web.login.ErrorLoginServlet moved")).endIteration()
+                                .and(Iteration.over("2").perform(Hint
                                             .withText("This class was removed in Red Hat JBoss Portal Platform 6. See the web.xml/login.jsp from the sample-portal quickstart for an example on how to deal with authentication/authorization on this version.")
-                                            .withEffort(1)))
+                                            .withEffort(1)).endIteration()))
                     .addRule()
                     .when(XmlFile.matchesXpath("//*[starts-with(., 'org.exoplatform.web.security.PortalLoginController')]/text()")
                                 .as("1")
                                 .and(XmlFile.from("1").matchesXpath("//*[starts-with(., 'org.exoplatform.web.security.PortalLoginController')]/text()")
                                             .resultMatches("org.exoplatform.web.security.PortalLoginController")
                                             .as("2")))
-                    .perform(Hint.in("1")
-                                .withText("Class org.exoplatform.web.security.PortalLoginController moved")
-                                .and(Hint.in("2")
+                    .perform(Iteration.over("1").perform(Hint
+                                .withText("Class org.exoplatform.web.security.PortalLoginController moved")).endIteration()
+                                .and(Iteration.over("2").perform(Hint
                                             .withText("This class was removed in Red Hat JBoss Portal Platform 6. See the web.xml/login.jsp from the sample-portal quickstart for an example on how to deal with authentication/authorization on this version.")
-                                            .withEffort(1)));
+                                            .withEffort(1)).endIteration()));
         return configuration;
     }
     // @formatter:on

@@ -3,6 +3,7 @@ package org.jboss.windup.rules.apps.xml.legacy;
 import org.jboss.windup.config.RulePhase;
 import org.jboss.windup.config.WindupRuleProvider;
 import org.jboss.windup.config.metadata.RuleMetadata;
+import org.jboss.windup.config.operation.Iteration;
 import org.jboss.windup.graph.GraphContext;
 import org.jboss.windup.reporting.config.Classification;
 import org.jboss.windup.reporting.config.Hint;
@@ -216,12 +217,12 @@ public class XmlBaseConfig extends WindupRuleProvider
                                 .and(XmlFile.from("sca").matchesXpath("//sca:property[@name='JMSConnectionFactory' and @type='jms:JMSConnectionFactory']").namespace("sca", "http://www.osoa.org/xmlns/sca/1.0").as("jms"))
                                 .and(XmlFile.from("sca").matchesXpath("//sca:implementation.java/@class").namespace("sca", "http://www.osoa.org/xmlns/sca/1.0").as("service"))
                                 )
-                    .perform(Classification.of("sca").as("SCA Configuration")
-                                .and(Classification.of("tibco-soap").as("Tibco SCA Extension: SOAP Binding"))
-                                .and(Classification.of("tibco-jms").as("Tibco SCA Extension: JMS Binding"))
-                                .and(Classification.of("dataSource").as("Data Source"))
-                                .and(Classification.of("jms").as("JMS Listener"))
-                                .and(Hint.in("service").withText("Java Service"))
+                    .perform(Iteration.over("sca").perform(Classification.as("SCA Configuration")).endIteration()
+                                .and(Iteration.over("tibco-soap").perform(Classification.as("Tibco SCA Extension: SOAP Binding")).endIteration())
+                                .and(Iteration.over("tibco-jms").perform(Classification.as("Tibco SCA Extension: JMS Binding")).endIteration())
+                                .and(Iteration.over("dataSource").perform(Classification.as("Data Source")).endIteration())
+                                .and(Iteration.over("jms").perform(Classification.as("JMS Listener")).endIteration())
+                                .and(Iteration.over("service").perform(Hint.withText("Java Service")).endIteration())
                                 );
         return configuration;
     }
