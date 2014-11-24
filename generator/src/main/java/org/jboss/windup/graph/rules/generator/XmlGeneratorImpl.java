@@ -37,7 +37,7 @@ public class XmlGeneratorImpl implements XmlGenerator
     public void process(WindupRuleProvider provider, GraphContext context)
     {
         Configuration cfg = provider.getConfiguration(context);
-        String fileName="/tmp/transformed/" + provider.getClass().getName().split("_\\$\\$")[0] + ".xml";
+        String fileName="/tmp/transformed/" + provider.getClass().getName().split("_\\$\\$")[0] + ".windup.xml";
         File file = new File(fileName);
         JAXBContext jaxbContext;
         try
