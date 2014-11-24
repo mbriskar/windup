@@ -11,6 +11,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -23,6 +27,7 @@ import org.jboss.windup.config.GraphRewrite;
 import org.jboss.windup.config.Variables;
 import org.jboss.windup.config.condition.GraphCondition;
 import org.jboss.windup.config.operation.Iteration;
+import org.jboss.windup.config.operation.ruleelement.NamespaceMapAdapter;
 import org.jboss.windup.graph.GraphContext;
 import org.jboss.windup.graph.model.WindupVertexFrame;
 import org.jboss.windup.graph.service.GraphService;
@@ -43,18 +48,24 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+@XmlRootElement
 public class XmlFile extends GraphCondition
 {
     private static final Logger LOG = Logging.get(XmlFile.class);
 
     protected static final String UNPARSEABLE_XML_CLASSIFICATION = "Unparseable XML File";
     protected static final String UNPARSEABLE_XML_DESCRIPTION = "This file could not be parsed via XPath";
+    @XmlAttribute(name = "as")
     private String variable = Iteration.DEFAULT_VARIABLE_LIST_STRING;
+    @XmlAttribute(name = "matches")
     private String xpath;
+    @XmlJavaTypeAdapter(NameSpaceAdapter.class)
     private Map<String, String> namespaces = new HashMap<>();
+    @XmlAttribute(name = "in")
     private String fileName;
+    @XmlAttribute(name = "publicId")
     private String publicId;
-
+    @XmlAttribute(name = "xpathResultMatch")
     private String xpathResultMatch;
 
     public void setXpathResultMatch(String xpathResultMatch)

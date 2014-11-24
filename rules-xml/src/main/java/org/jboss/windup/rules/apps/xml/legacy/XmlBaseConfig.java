@@ -6,6 +6,7 @@ import org.jboss.windup.config.operation.Iteration;
 import org.jboss.windup.graph.GraphContext;
 import org.jboss.windup.reporting.config.Classification;
 import org.jboss.windup.reporting.config.Hint;
+import org.jboss.windup.reporting.config.Link;
 import org.jboss.windup.rules.apps.xml.condition.XmlFile;
 import org.ocpsoft.rewrite.config.Configuration;
 import org.ocpsoft.rewrite.config.ConfigurationBuilder;
@@ -213,7 +214,7 @@ public class XmlBaseConfig extends WindupRuleProvider
                                 )
                     .perform(Iteration.over("sca").perform(Classification.as("SCA Configuration")).endIteration()
                                 .and(Iteration.over("tibco-soap").perform(Classification.as("Tibco SCA Extension: SOAP Binding")).endIteration())
-                                .and(Iteration.over("tibco-jms").perform(Classification.as("Tibco SCA Extension: JMS Binding")).endIteration())
+                                .and(Iteration.over("tibco-jms").perform(Classification.as("Tibco SCA Extension: JMS Binding").and(Hint.withText("abc").with(Link.to("abc", "deb")))).endIteration())
                                 .and(Iteration.over("dataSource").perform(Classification.as("Data Source")).endIteration())
                                 .and(Iteration.over("jms").perform(Classification.as("JMS Listener")).endIteration())
                                 .and(Iteration.over("service").perform(Hint.withText("Java Service")).endIteration())

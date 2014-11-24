@@ -1,15 +1,24 @@
 package org.jboss.windup.reporting.config;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Represents a link to an external resource, such as an URL.
  * 
  * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
  */
+@XmlRootElement
 public class Link
 {
+    @XmlAttribute
     private String link;
+    @XmlAttribute
     private String description;
 
+    public Link() {
+        
+    }
     private Link(String link, String description)
     {
         this.link = link;

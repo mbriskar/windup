@@ -9,6 +9,10 @@ import java.util.concurrent.Callable;
 import java.util.logging.Level;
 
 import javax.inject.Inject;
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -37,9 +41,12 @@ import org.jboss.windup.rules.apps.xml.model.XmlFileModel;
 import org.jboss.windup.rules.apps.xml.model.XsltTransformationModel;
 import org.jboss.windup.rules.apps.xml.service.XsltTransformationService;
 import org.ocpsoft.rewrite.context.EvaluationContext;
+
 import java.util.logging.Logger;
+
 import org.jboss.windup.util.Logging;
 
+@XmlRootElement
 public class XSLTTransformation extends AbstractIterationOperation<XmlFileModel>
 {
     private ClassLoader contextClassLoader;
@@ -49,12 +56,16 @@ public class XSLTTransformation extends AbstractIterationOperation<XmlFileModel>
 
     private static final Logger LOG = Logging.get(XSLTTransformation.class);
 
+    @XmlAttribute
     private String description;
+    @XmlAttribute
     private String location;
+    @XmlAttribute
     private String extension;
 
     private Transformer xsltTransformer;
 
+    @XmlAnyElement
     private Map<String, String> xsltParameters;
 
     XSLTTransformation(String variable)

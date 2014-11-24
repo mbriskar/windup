@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.jboss.forge.furnace.util.Assert;
 import org.jboss.windup.config.GraphRewrite;
 import org.jboss.windup.config.operation.ruleelement.AbstractIterationOperation;
@@ -17,12 +22,17 @@ import org.ocpsoft.rewrite.context.EvaluationContext;
 /**
  * Used as an intermediate to support the addition of {@link InlineHintModel} objects to the graph via an Operation.
  */
+@XmlRootElement
 public class Hint extends AbstractIterationOperation<FileLocationModel>
 {
     private static final Logger log = Logger.getLogger(Hint.class.getName());
 
+    @XmlAttribute(name="hint")
     private String hintText;
+    @XmlAttribute(name="effort")
     private int effort;
+    @XmlElementWrapper
+    @XmlElement(name="link")
     private List<Link> links = new ArrayList<>();
 
     protected Hint(String variable)

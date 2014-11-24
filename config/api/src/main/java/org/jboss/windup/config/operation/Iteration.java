@@ -12,6 +12,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.bind.annotation.XmlAnyElement;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import org.jboss.windup.config.GraphRewrite;
 import org.jboss.windup.config.Variables;
 import org.jboss.windup.config.condition.GraphCondition;
@@ -48,6 +56,8 @@ import org.ocpsoft.rewrite.event.Rewrite;
  * 
  * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
  */
+@XmlRootElement
+@XmlSeeAlso({IterationOtherwise.class,IterationCondition.class})
 public class Iteration extends DefaultOperationBuilder
             implements IterationBuilderVar, IterationBuilderOver,
             IterationBuilderWhen, IterationBuilderPerform, IterationBuilderOtherwise,
@@ -57,13 +67,27 @@ public class Iteration extends DefaultOperationBuilder
     public static final String DEFAULT_VARIABLE_LIST_STRING = "default";
     public static final String DEFAULT_SINGLE_VARIABLE_STRING = singleVariableIterationName(DEFAULT_VARIABLE_LIST_STRING);
 
+
+    @XmlJavaTypeAdapter(IterationConditionAdapter.class)
     private Condition condition;
+    @XmlAnyElement
     private Operation operationPerform;
+    
+    @XmlJavaTypeAdapter(IterationOtherwiseAdapter.class)
     private Operation operationOtherwise;
+    
+    @XmlAttribute
+    private String over;
+    @XmlAttribute
+    private String overType;
 
     private IterationPayloadManager payloadManager;
     private final FramesSelector selectionManager;
 
+    private Iteration() {
+        selectionManager = null;
+    }
+    
     /**
      * Calculates the default name for the single variable in the selection with the given name.
      */
@@ -87,9 +111,12 @@ public class Iteration extends DefaultOperationBuilder
      */
     public static IterationBuilderOver over(Class<? extends WindupVertexFrame> sourceType, String source)
     {
+        
         Iteration iterationImpl = new Iteration(new TypedNamedFramesSelector(sourceType, source));
         iterationImpl.setPayloadManager(new TypedNamedIterationPayloadManager(sourceType,
                     singleVariableIterationName(source)));
+        iterationImpl.overType=sourceType.getClass().getCanonicalName();
+        iterationImpl.over=source;
         return iterationImpl;
     }
 
@@ -98,8 +125,10 @@ public class Iteration extends DefaultOperationBuilder
      */
     public static IterationBuilderOver over(String source)
     {
+        
         Iteration iterationImpl = new Iteration(new NamedFramesSelector(source));
         iterationImpl.setPayloadManager(new NamedIterationPayloadManager(singleVariableIterationName(source)));
+        iterationImpl.over=source;
         return iterationImpl;
     }
 
@@ -112,6 +141,7 @@ public class Iteration extends DefaultOperationBuilder
         Iteration iterationImpl = new Iteration(new TypedFramesSelector(sourceType));
         iterationImpl.setPayloadManager(new TypedNamedIterationPayloadManager(sourceType,
                     DEFAULT_SINGLE_VARIABLE_STRING));
+        iterationImpl.overType=sourceType.getClass().getCanonicalName();
         return iterationImpl;
     }
 
@@ -256,6 +286,7 @@ public class Iteration extends DefaultOperationBuilder
     }
 
     @Override
+    @XmlTransient
     public List<Operation> getOperations()
     {
         return Arrays.asList(operationPerform, operationOtherwise);
@@ -372,11 +403,13 @@ public class Iteration extends DefaultOperationBuilder
         this.payloadManager = payloadManager;
     }
 
+    @XmlTransient
     public FramesSelector getSelectionManager()
     {
         return selectionManager;
     }
 
+    @XmlTransient
     public IterationPayloadManager getPayloadManager()
     {
         return payloadManager;

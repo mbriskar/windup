@@ -15,6 +15,8 @@
  */
 package org.jboss.windup.config.condition;
 
+import javax.xml.bind.annotation.XmlAttribute;
+
 import org.jboss.windup.config.GraphRewrite;
 import org.ocpsoft.rewrite.config.Condition;
 import org.ocpsoft.rewrite.config.DefaultConditionBuilder;
@@ -28,7 +30,7 @@ import org.ocpsoft.rewrite.event.Rewrite;
  */
 public abstract class GraphCondition extends DefaultConditionBuilder
 {
-
+    
     private String inputVariablesName;
 
     public abstract boolean evaluate(GraphRewrite event, EvaluationContext context);
@@ -38,6 +40,7 @@ public abstract class GraphCondition extends DefaultConditionBuilder
         this.inputVariablesName = variablesName;
     }
 
+    @XmlAttribute(name="from")
     public String getInputVariablesName()
     {
         return inputVariablesName;

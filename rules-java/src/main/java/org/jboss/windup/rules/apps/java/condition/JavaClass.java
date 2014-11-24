@@ -4,6 +4,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.jboss.forge.furnace.util.Assert;
 import org.jboss.windup.config.GraphRewrite;
 import org.jboss.windup.config.condition.GraphCondition;
@@ -29,17 +33,26 @@ import com.tinkerpop.gremlin.java.GremlinPipeline;
 /**
  * {@link GraphCondition} that matches Vertices in the graph based upon the provided parameters.
  */
+@XmlRootElement(name="javaclass")
 public class JavaClass extends GraphCondition implements JavaClassBuilder, JavaClassBuilderAt, JavaClassBuilderInFile
 {
+    @XmlAttribute(name = "references")
     private final String regex;
+    @XmlElement(name="location")
     private List<TypeReferenceLocation> locations = Collections.emptyList();
+    @XmlAttribute(name="as")
     private String variable = Iteration.DEFAULT_VARIABLE_LIST_STRING;
+    @XmlAttribute(name="in")
     private String typeFilterRegex;
 
     private JavaClass(String regex)
     {
         this.regex = regex;
         TypeInterestFactory.registerInterest(regex);
+    }
+    
+    public JavaClass() {
+        regex="";
     }
 
     /**

@@ -8,6 +8,9 @@ import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.jboss.windup.config.GraphRewrite;
 import org.jboss.windup.config.Variables;
 import org.jboss.windup.config.operation.GraphOperation;
@@ -18,6 +21,7 @@ import org.ocpsoft.rewrite.context.EvaluationContext;
 /**
  * Simplified operation having method that already accepts the found payload.
  */
+@XmlRootElement(name="ABSTRACTITERATIONOPERATION")
 public abstract class AbstractIterationOperation<T extends WindupVertexFrame> extends GraphOperation
 {
 
@@ -36,8 +40,10 @@ public abstract class AbstractIterationOperation<T extends WindupVertexFrame> ex
         this.variableName = variableName;
     }
 
+    
     private String variableName;
-
+    
+    @XmlAttribute(name="as")
     public String getVariableName()
     {
         if (variableName == null)

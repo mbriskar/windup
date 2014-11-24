@@ -1,5 +1,7 @@
 package org.jboss.windup.config.loader;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -7,12 +9,18 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.inject.Inject;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jboss.forge.furnace.services.Imported;
 import org.jboss.forge.furnace.util.Predicate;
+import org.jboss.windup.config.RulePhase;
 import org.jboss.windup.config.WindupRuleProvider;
 import org.jboss.windup.config.metadata.WindupRuleMetadata;
+import org.jboss.windup.config.selectors.XmlGenerator;
 import org.jboss.windup.graph.GraphContext;
 import org.jboss.windup.util.ServiceLogger;
 import org.ocpsoft.rewrite.bind.Evaluation;
@@ -20,6 +28,7 @@ import org.ocpsoft.rewrite.config.Condition;
 import org.ocpsoft.rewrite.config.ConditionVisit;
 import org.ocpsoft.rewrite.config.Configuration;
 import org.ocpsoft.rewrite.config.ConfigurationBuilder;
+import org.ocpsoft.rewrite.config.ConfigurationRuleBuilder;
 import org.ocpsoft.rewrite.config.Operation;
 import org.ocpsoft.rewrite.config.OperationVisit;
 import org.ocpsoft.rewrite.config.ParameterizedCallback;
@@ -42,6 +51,8 @@ public class WindupConfigurationLoaderImpl implements WindupRuleLoader
 
     @Inject
     private Imported<WindupRuleProviderLoader> loaders;
+    @Inject
+    private Imported<XmlGenerator> generator;
 
     public WindupConfigurationLoaderImpl()
     {
@@ -68,40 +79,36 @@ public class WindupConfigurationLoaderImpl implements WindupRuleLoader
 
     private WindupRuleMetadata build(GraphContext context, Predicate<WindupRuleProvider> ruleProviderFilter)
     {
-
         ConfigurationBuilder result = ConfigurationBuilder.begin();
-
         List<WindupRuleProvider> providers = getProviders(context);
         WindupRuleMetadata executionMetadata = new WindupRuleMetadata();
         executionMetadata.setProviders(providers);
         for (WindupRuleProvider provider : providers)
         {
+            if(provider.getPhase().equals(RulePhase.MIGRATION_RULES)) {
+                generator.get().process(provider,context);
+            }
             if (ruleProviderFilter != null && !ruleProviderFilter.accept(provider))
             {
                 // if there is a filter, and it rejects the ruleProvider, then skip this rule provider
                 LOG.info(provider + " didn't pass the filter so is ignored.");
                 continue;
             }
-
             Configuration cfg = provider.getConfiguration(context);
             List<Rule> rules = cfg.getRules();
             executionMetadata.setRules(provider, rules);
-
             int i = 0;
             for (final Rule rule : rules)
             {
                 i++;
                 if (rule instanceof Context)
                     provider.enhanceMetadata((Context) rule);
-
                 if (rule instanceof RuleBuilder && StringUtils.isEmpty(rule.getId()))
                 {
                     // set synthetic id
                     ((RuleBuilder) rule).withId(generatedRuleID(provider, rule, i));
                 }
-
                 result.addRule(rule);
-
                 if (rule instanceof ParameterizedRule)
                 {
                     ParameterizedCallback callback = new ParameterizedCallback()
@@ -111,7 +118,6 @@ public class WindupConfigurationLoaderImpl implements WindupRuleLoader
                         {
                             Set<String> names = parameterized.getRequiredParameterNames();
                             ParameterStore store = ((ParameterizedRule) rule).getParameterStore();
-
                             if (names != null)
                                 for (String name : names)
                                 {
@@ -119,22 +125,19 @@ public class WindupConfigurationLoaderImpl implements WindupRuleLoader
                                     if (parameter instanceof ConfigurableParameter<?>)
                                         ((ConfigurableParameter<?>) parameter).bindsTo(Evaluation.property(name));
                                 }
-
                             parameterized.setParameterStore(store);
                         }
                     };
-
                     Visitor<Condition> conditionVisitor = new ParameterizedConditionVisitor(callback);
                     new ConditionVisit(rule).accept(conditionVisitor);
-
                     Visitor<Operation> operationVisitor = new ParameterizedOperationVisitor(callback);
                     new OperationVisit(rule).accept(operationVisitor);
                 }
             }
         }
-
         executionMetadata.setConfiguration(result);
         return executionMetadata;
+
     }
 
     private String generatedRuleID(WindupRuleProvider provider, Rule rule, int idx)

@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.jboss.forge.furnace.util.Assert;
 import org.jboss.windup.config.GraphRewrite;
 import org.jboss.windup.config.operation.Iteration;
@@ -23,13 +27,17 @@ import org.ocpsoft.rewrite.context.EvaluationContext;
  * 
  * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
  */
+@XmlRootElement
 public class Classification extends AbstractIterationOperation<FileModel>
 {
     private static final Logger log = Logger.getLogger(Classification.class.getName());
-
+    @XmlElement
     private List<Link> links = new ArrayList<>();
+    @XmlAttribute(name="classification")
     private String classificationText;
+    @XmlAttribute(name="description")
     private String description;
+    @XmlAttribute(name="effort")
     private int effort;
 
     Classification(String variable)

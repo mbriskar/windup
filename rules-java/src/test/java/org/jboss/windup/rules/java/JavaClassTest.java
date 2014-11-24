@@ -53,9 +53,11 @@ public class JavaClassTest
                 @AddonDependency(name = "org.jboss.windup.config:windup-config"),
                 @AddonDependency(name = "org.jboss.windup.exec:windup-exec"),
                 @AddonDependency(name = "org.jboss.windup.rules.apps:rules-java"),
+                @AddonDependency(name = "org.jboss.windup.rules.apps:rules-java-ee", version = "2.0.0-SNAPSHOT"),
                 @AddonDependency(name = "org.jboss.windup.rexster:rexster", version = "2.0.0-SNAPSHOT"),
                 @AddonDependency(name = "org.jboss.windup.reporting:windup-reporting"),
-                @AddonDependency(name = "org.jboss.forge.furnace.container:cdi")
+                @AddonDependency(name = "org.jboss.forge.furnace.container:cdi"),
+                @AddonDependency(name = "org.jboss.windup.xml.generator:generator", version="2.0.0-SNAPSHOT"),
     })
     public static ForgeArchive getDeployment()
     {
@@ -67,6 +69,7 @@ public class JavaClassTest
                                 AddonDependencyEntry.create("org.jboss.windup.config:windup-config"),
                                 AddonDependencyEntry.create("org.jboss.windup.exec:windup-exec"),
                                 AddonDependencyEntry.create("org.jboss.windup.rules.apps:rules-java"),
+                                AddonDependencyEntry.create("org.jboss.windup.rules.apps:rules-java-ee"),
                                 AddonDependencyEntry.create("org.jboss.windup.reporting:windup-reporting"),
                                 AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi")
                     );
@@ -118,8 +121,6 @@ public class JavaClassTest
             context.getGraph().getBaseGraph().commit();
 
             final WindupConfiguration processorConfig = new WindupConfiguration().setOutputDirectory(outputPath);
-            processorConfig.setRuleProviderFilter(new RuleProviderWithDependenciesPredicate(
-                        JavaClassTestRuleProvider.class));
             processorConfig.setGraphContext(context);
             processorConfig.setInputPath(Paths.get(inputDir));
             processorConfig.setOutputDirectory(outputPath);
