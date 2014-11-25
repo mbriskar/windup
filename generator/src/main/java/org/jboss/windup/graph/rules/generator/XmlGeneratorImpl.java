@@ -64,6 +64,12 @@ public class XmlGeneratorImpl implements XmlGenerator
             // trim newline when comparing with lineToRemove
             String trimmedLine = currentLine.trim();
             
+            if(trimmedLine.contains("?xml")) {
+                writer.write(currentLine + System.getProperty("line.separator"));
+                writer.write("<ruleset xmlns=\"http://windup.jboss.org/v1/xml\" id=\" " + provider.getClass().getSimpleName().split("_\\$\\$")[0] + "\">" + System.getProperty("line.separator"));
+               
+                continue;
+            }
             if(trimmedLine.contains("<namespaces>")) continue;
             if(trimmedLine.contains("<condition>")) trimmedLine.replace("<condition>", "<when>");
             if(trimmedLine.contains("</condition>")) trimmedLine.replace("</condition>", "</when>");
