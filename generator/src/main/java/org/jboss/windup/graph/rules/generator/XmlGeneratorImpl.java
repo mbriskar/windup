@@ -90,6 +90,7 @@ public class XmlGeneratorImpl implements XmlGenerator
             if(trimmedLine.contains("</defaultConditionBuilderInternal>")) continue;
             writer.write(currentLine + System.getProperty("line.separator"));
         }
+        writer.write("</ruleset>");
         writer.close(); 
         reader.close(); 
         boolean successful = tempFile.renameTo(file);
