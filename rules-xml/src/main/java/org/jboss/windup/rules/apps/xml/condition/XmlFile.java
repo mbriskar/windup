@@ -48,7 +48,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-@XmlRootElement
+@XmlRootElement(name="xmlfile")
 public class XmlFile extends GraphCondition
 {
     private static final Logger LOG = Logging.get(XmlFile.class);
