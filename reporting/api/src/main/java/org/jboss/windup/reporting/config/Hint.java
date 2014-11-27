@@ -27,7 +27,7 @@ public class Hint extends AbstractIterationOperation<FileLocationModel>
 {
     private static final Logger log = Logger.getLogger(Hint.class.getName());
 
-    @XmlAttribute(name="hint")
+    @XmlAttribute(name="message")
     private String hintText;
     @XmlAttribute(name="effort")
     private int effort;

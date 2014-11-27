@@ -56,7 +56,7 @@ public class XSLTTransformation extends AbstractIterationOperation<XmlFileModel>
 
     private static final Logger LOG = Logging.get(XSLTTransformation.class);
 
-    @XmlAttribute
+    @XmlAttribute(name="description")
     private String description;
     @XmlAttribute(name="template")
     private String location;

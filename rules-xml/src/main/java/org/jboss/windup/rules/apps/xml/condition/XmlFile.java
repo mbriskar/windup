@@ -63,7 +63,7 @@ public class XmlFile extends GraphCondition
     private Map<String, String> namespaces = new HashMap<>();
     @XmlAttribute(name = "in")
     private String fileName;
-    @XmlAttribute(name = "publicId")
+    @XmlAttribute(name = "public-id")
     private String publicId;
     @XmlAttribute(name = "xpathResultMatch")
     private String xpathResultMatch;
