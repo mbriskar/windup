@@ -46,7 +46,7 @@ import java.util.logging.Logger;
 
 import org.jboss.windup.util.Logging;
 
-@XmlRootElement
+@XmlRootElement(name="xslt")
 public class XSLTTransformation extends AbstractIterationOperation<XmlFileModel>
 {
     private ClassLoader contextClassLoader;
@@ -58,7 +58,7 @@ public class XSLTTransformation extends AbstractIterationOperation<XmlFileModel>
 
     @XmlAttribute
     private String description;
-    @XmlAttribute
+    @XmlAttribute(name="template")
     private String location;
     @XmlAttribute
     private String extension;
