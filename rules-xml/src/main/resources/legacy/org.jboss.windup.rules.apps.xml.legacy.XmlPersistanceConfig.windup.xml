@@ -46,6 +46,7 @@
                 <iteration over="JPA1">
                     <classification classification="JPA 1.x Configuration" effort="0" />
                     <iteration over="JPA1">
+			<when>
                         <xmlfile as="1"
                             matches="/project/taskdef[@classname='weblogic.ant.taskdefs.webservices.servicegen.ServiceGenTask'] | /project/taskdef[@classname='weblogic.ant.taskdefs.webservices.javaschema.JavaSchema'] | /project/taskdef[@classname='weblogic.ant.taskdefs.webservices.autotype.JavaSource2DD'] | /project/taskdef[@classname='weblogic.ant.taskdefs.webservices.clientgen.ClientGenTask']"
                             from="JPA1_instance">
@@ -55,6 +56,7 @@
                             xpathResultMatch="weblogic.ant.taskdefs.webservices.servicegen.ServiceGenTask$ | weblogic.ant.taskdefs.webservices.javaschema.JavaSchema$ | weblogic.ant.taskdefs.webservices.autotype.JavaSource2DD$ | weblogic.ant.taskdefs.webservices.clientgen.ClientGenTask$"
                             from="1">
                         </xmlfile>
+			</when>
                         <iteration over="1">
                             <hint message="Weblogic Specifc Webservice Ant Tasks" effort="10">
                             </hint>
@@ -65,6 +67,7 @@
                         </iteration>
                     </iteration>
                     <iteration over="JPA1">
+			<when>
                         <xmlfile as="1"
                             matches="//*[@value='org.hibernate.transaction.JOnASTransactionManagerLookup']/@value" from="JPA1_instance">
                         </xmlfile>
@@ -72,7 +75,7 @@
                             matches="//*[@value='org.hibernate.transaction.JOnASTransactionManagerLookup']/@value"
                             xpathResultMatch="org.hibernate.transaction.JOnASTransactionManagerLookup$" from="1">
                         </xmlfile>
-
+			</when>
                         <iteration over="1">
                             <hint message="JOnAS Specific" effort="1">
                             </hint>
@@ -84,7 +87,7 @@
                         </iteration>
                     </iteration>
                     <iteration over="JPA1">
-
+			<when>
                         <xmlfile as="1"
                             matches="//*[@value='org.hibernate.transaction.JOTMTransactionManagerLookup']/@value" from="JPA1_instance">
                         </xmlfile>
@@ -92,7 +95,7 @@
                             matches="//*[@value='org.hibernate.transaction.JOTMTransactionManagerLookup']/@value"
                             xpathResultMatch="org.hibernate.transaction.JOTMTransactionManagerLookup$" from="1">
                         </xmlfile>
-
+			</when>
                         <iteration over="1">
                             <hint message="JOTM Specific" effort="1">
                             </hint>
@@ -104,7 +107,7 @@
                         </iteration>
                     </iteration>
                     <iteration over="JPA1">
-
+			<when>
                         <xmlfile as="1"
                             matches="//*[@value='org.hibernate.transaction.WebSphereExtendedJTATransactionLookup']/@value"
                             from="JPA1_instance">
@@ -113,7 +116,7 @@
                             matches="//*[@value='org.hibernate.transaction.WebSphereExtendedJTATransactionLookup']/@value"
                             xpathResultMatch="org.hibernate.transaction.WebSphereExtendedJTATransactionLookup$" from="1">
                         </xmlfile>
-
+			</when>
                         <iteration over="1">
                             <hint message="Websphere Specific" effort="1">
                             </hint>
@@ -125,7 +128,7 @@
                         </iteration>
                     </iteration>
                     <iteration over="JPA1">
-
+			<when>
                         <xmlfile as="1"
                             matches="//*[@value='org.hibernate.transaction.WebSphereTransactionManagerLookup']/@value | //property[@name='transaction.manager_lookup_class' and .='org.hibernate.transaction.WebSphereTransactionManagerLookup']/text()"
                             from="JPA1_instance">
@@ -134,7 +137,7 @@
                             matches="//*[@value='org.hibernate.transaction.WebSphereTransactionManagerLookup']/@value | //property[@name='transaction.manager_lookup_class' and .='org.hibernate.transaction.WebSphereTransactionManagerLookup']/text()"
                             xpathResultMatch="org.hibernate.transaction.WebSphereTransactionManagerLookup$" from="1">
                         </xmlfile>
-
+			</when>
                         <iteration over="1">
                             <hint message="Websphere Specific" effort="1">
                             </hint>
@@ -146,7 +149,7 @@
                         </iteration>
                     </iteration>
                     <iteration over="JPA1">
-
+			<when>
                         <xmlfile as="1"
                             matches="//*[@value='org.hibernate.transaction.WeblogicTransactionManagerLookup']/@value | //property[@name='transaction.manager_lookup_class' and .='org.hibernate.transaction.WeblogicTransactionManagerLookup']/text()"
                             from="JPA1_instance">
@@ -155,7 +158,7 @@
                             matches="//*[@value='org.hibernate.transaction.WeblogicTransactionManagerLookup']/@value | //property[@name='transaction.manager_lookup_class' and .='org.hibernate.transaction.WeblogicTransactionManagerLookup']/text()"
                             xpathResultMatch="org.hibernate.transaction.WeblogicTransactionManagerLookup$" from="1">
                         </xmlfile>
-
+			</when>
                         <iteration over="1">
                             <hint message="Weblogic Specific" effort="1">
                             </hint>
@@ -167,14 +170,14 @@
                         </iteration>
                     </iteration>
                     <iteration over="JPA1">
-
+			<when>
                         <xmlfile as="1" matches="//*[@value='org.hibernate.transaction.BESTransactionManagerLookup']/@value"
                             from="JPA1_instance">
                         </xmlfile>
                         <xmlfile as="2" matches="//*[@value='org.hibernate.transaction.BESTransactionManagerLookup']/@value"
                             xpathResultMatch="org.hibernate.transaction.BESTransactionManagerLookup$" from="1">
                         </xmlfile>
-
+			</when>
                         <iteration over="1">
                             <hint message="Borland ES Specific" effort="0">
                             </hint>
@@ -186,7 +189,7 @@
                         </iteration>
                     </iteration>
                     <iteration over="JPA1">
-
+			<when>
                         <xmlfile as="1"
                             matches="//*[@value='org.hibernate.transaction.JRun4TransactionManagerLookup']/@value" from="JPA1_instance">
                         </xmlfile>
@@ -194,7 +197,7 @@
                             matches="//*[@value='org.hibernate.transaction.JRun4TransactionManagerLookup']/@value"
                             xpathResultMatch="org.hibernate.transaction.JRun4TransactionManagerLookup$" from="1">
                         </xmlfile>
-
+			</when>
                         <iteration over="1">
                             <hint message="JRun4 AS Specific" effort="0">
                             </hint>
@@ -206,7 +209,7 @@
                         </iteration>
                     </iteration>
                     <iteration over="JPA1">
-
+			<when>
                         <xmlfile as="1"
                             matches="//*[@value='org.hibernate.transaction.OC4JTransactionManagerLookup']/@value" from="JPA1_instance">
                         </xmlfile>
@@ -214,7 +217,7 @@
                             matches="//*[@value='org.hibernate.transaction.OC4JTransactionManagerLookup']/@value"
                             xpathResultMatch="org.hibernate.transaction.OC4JTransactionManagerLookup$" from="1">
                         </xmlfile>
-
+			</when>
                         <iteration over="1">
                             <hint message="OC4J (Oracle) AS Specific" effort="0">
                             </hint>
@@ -226,7 +229,7 @@
                         </iteration>
                     </iteration>
                     <iteration over="JPA1">
-
+			<when>
                         <xmlfile as="1"
                             matches="//*[@value='org.hibernate.transaction.OrionTransactionManagerLookup']/@value" from="JPA1_instance">
                         </xmlfile>
@@ -234,7 +237,7 @@
                             matches="//*[@value='org.hibernate.transaction.OrionTransactionManagerLookup']/@value"
                             xpathResultMatch="org.hibernate.transaction.OrionTransactionManagerLookup$" from="1">
                         </xmlfile>
-
+			</when>
                         <iteration over="1">
                             <hint message="Orion Specific" effort="0">
                             </hint>
@@ -246,7 +249,7 @@
                         </iteration>
                     </iteration>
                     <iteration over="JPA1">
-
+			<when>
                         <xmlfile as="1"
                             matches="//*[@value='org.hibernate.transaction.ResinTransactionManagerLookup']/@value" from="JPA1_instance">
                         </xmlfile>
@@ -254,7 +257,7 @@
                             matches="//*[@value='org.hibernate.transaction.ResinTransactionManagerLookup']/@value"
                             xpathResultMatch="org.hibernate.transaction.ResinTransactionManagerLookup$" from="1">
                         </xmlfile>
-
+			</when>
                         <iteration over="1">
                             <hint message="Resin Specific" effort="0">
                             </hint>
@@ -266,7 +269,7 @@
                         </iteration>
                     </iteration>
                     <iteration over="JPA1">
-
+			<when>
                         <xmlfile as="1"
                             matches="//*[@value='org.hibernate.transaction.SunONETransactionManagerLookup']/@value"
                             from="JPA1_instance">
@@ -275,7 +278,7 @@
                             matches="//*[@value='org.hibernate.transaction.SunONETransactionManagerLookup']/@value"
                             xpathResultMatch="org.hibernate.transaction.SunONETransactionManagerLookup$" from="1">
                         </xmlfile>
-
+			</when>
                         <iteration over="1">
                             <hint message="Sun ONE Application Server Specific" effort="0">
                             </hint>
@@ -299,7 +302,7 @@
                 <iteration over="JPA2">
                     <classification classification="JPA 2.x Configuration" effort="0" />
                     <iteration over="JPA2">
-
+			<when>
                         <xmlfile as="1"
                             matches="/project/taskdef[@classname='weblogic.ant.taskdefs.webservices.servicegen.ServiceGenTask'] | /project/taskdef[@classname='weblogic.ant.taskdefs.webservices.javaschema.JavaSchema'] | /project/taskdef[@classname='weblogic.ant.taskdefs.webservices.autotype.JavaSource2DD'] | /project/taskdef[@classname='weblogic.ant.taskdefs.webservices.clientgen.ClientGenTask']"
                             from="JPA2_instance">
@@ -309,7 +312,7 @@
                             xpathResultMatch="weblogic.ant.taskdefs.webservices.servicegen.ServiceGenTask$ | weblogic.ant.taskdefs.webservices.javaschema.JavaSchema$ | weblogic.ant.taskdefs.webservices.autotype.JavaSource2DD$ | weblogic.ant.taskdefs.webservices.clientgen.ClientGenTask$"
                             from="1">
                         </xmlfile>
-
+			</when>
                         <iteration over="1">
                             <hint message="Weblogic Specifc Webservice Ant Tasks" effort="10">
                             </hint>
@@ -320,7 +323,7 @@
                         </iteration>
                     </iteration>
                     <iteration over="JPA2">
-
+			<when>
                         <xmlfile as="1"
                             matches="//*[@value='org.hibernate.transaction.JOnASTransactionManagerLookup']/@value" from="JPA2_instance">
                         </xmlfile>
@@ -328,7 +331,7 @@
                             matches="//*[@value='org.hibernate.transaction.JOnASTransactionManagerLookup']/@value"
                             xpathResultMatch="org.hibernate.transaction.JOnASTransactionManagerLookup$" from="1">
                         </xmlfile>
-
+			</when>
                         <iteration over="1">
                             <hint message="JOnAS Specific" effort="1">
                             </hint>
@@ -340,7 +343,7 @@
                         </iteration>
                     </iteration>
                     <iteration over="JPA2">
-
+			<when>
                         <xmlfile as="1"
                             matches="//*[@value='org.hibernate.transaction.JOTMTransactionManagerLookup']/@value" from="JPA2_instance">
                         </xmlfile>
@@ -348,7 +351,7 @@
                             matches="//*[@value='org.hibernate.transaction.JOTMTransactionManagerLookup']/@value"
                             xpathResultMatch="org.hibernate.transaction.JOTMTransactionManagerLookup$" from="1">
                         </xmlfile>
-
+			</when>
                         <iteration over="1">
                             <hint message="JOTM Specific" effort="1">
                             </hint>
@@ -360,7 +363,7 @@
                         </iteration>
                     </iteration>
                     <iteration over="JPA2">
-
+			<when>
                         <xmlfile as="1"
                             matches="//*[@value='org.hibernate.transaction.WebSphereExtendedJTATransactionLookup']/@value"
                             from="JPA2_instance">
@@ -369,7 +372,7 @@
                             matches="//*[@value='org.hibernate.transaction.WebSphereExtendedJTATransactionLookup']/@value"
                             xpathResultMatch="org.hibernate.transaction.WebSphereExtendedJTATransactionLookup$" from="1">
                         </xmlfile>
-
+			</when>
                         <iteration over="1">
                             <hint message="Websphere Specific" effort="1">
                             </hint>
@@ -381,7 +384,7 @@
                         </iteration>
                     </iteration>
                     <iteration over="JPA2">
-
+			<when>
                         <xmlfile as="1"
                             matches="//*[@value='org.hibernate.transaction.WebSphereTransactionManagerLookup']/@value | //property[@name='transaction.manager_lookup_class' and .='org.hibernate.transaction.WebSphereTransactionManagerLookup']/text()"
                             from="JPA2_instance">
@@ -390,7 +393,7 @@
                             matches="//*[@value='org.hibernate.transaction.WebSphereTransactionManagerLookup']/@value | //property[@name='transaction.manager_lookup_class' and .='org.hibernate.transaction.WebSphereTransactionManagerLookup']/text()"
                             xpathResultMatch="org.hibernate.transaction.WebSphereTransactionManagerLookup$" from="1">
                         </xmlfile>
-
+			</when>
                         <iteration over="1">
                             <hint message="Websphere Specific" effort="1">
                             </hint>
@@ -402,7 +405,7 @@
                         </iteration>
                     </iteration>
                     <iteration over="JPA2">
-
+			<when>
                         <xmlfile as="1"
                             matches="//*[@value='org.hibernate.transaction.WeblogicTransactionManagerLookup']/@value | //property[@name='transaction.manager_lookup_class' and .='org.hibernate.transaction.WeblogicTransactionManagerLookup']/text()"
                             from="JPA2_instance">
@@ -411,7 +414,7 @@
                             matches="//*[@value='org.hibernate.transaction.WeblogicTransactionManagerLookup']/@value | //property[@name='transaction.manager_lookup_class' and .='org.hibernate.transaction.WeblogicTransactionManagerLookup']/text()"
                             xpathResultMatch="org.hibernate.transaction.WeblogicTransactionManagerLookup$" from="1">
                         </xmlfile>
-
+			</when>
                         <iteration over="1">
                             <hint message="Weblogic Specific" effort="1">
                             </hint>
@@ -423,14 +426,14 @@
                         </iteration>
                     </iteration>
                     <iteration over="JPA2">
-
+			<when>
                         <xmlfile as="1" matches="//*[@value='org.hibernate.transaction.BESTransactionManagerLookup']/@value"
                             from="JPA2_instance">
                         </xmlfile>
                         <xmlfile as="2" matches="//*[@value='org.hibernate.transaction.BESTransactionManagerLookup']/@value"
                             xpathResultMatch="org.hibernate.transaction.BESTransactionManagerLookup$" from="1">
                         </xmlfile>
-
+			</when>
                         <iteration over="1">
                             <hint message="Borland ES Specific" effort="0">
                             </hint>
@@ -442,7 +445,7 @@
                         </iteration>
                     </iteration>
                     <iteration over="JPA2">
-
+			<when>
                         <xmlfile as="1"
                             matches="//*[@value='org.hibernate.transaction.JRun4TransactionManagerLookup']/@value" from="JPA2_instance">
                         </xmlfile>
@@ -450,7 +453,7 @@
                             matches="//*[@value='org.hibernate.transaction.JRun4TransactionManagerLookup']/@value"
                             xpathResultMatch="org.hibernate.transaction.JRun4TransactionManagerLookup$" from="1">
                         </xmlfile>
-
+			</when>
                         <iteration over="1">
                             <hint message="JRun4 AS Specific" effort="0">
                             </hint>
@@ -462,7 +465,7 @@
                         </iteration>
                     </iteration>
                     <iteration over="JPA2">
-
+			<when>
                         <xmlfile as="1"
                             matches="//*[@value='org.hibernate.transaction.OC4JTransactionManagerLookup']/@value" from="JPA2_instance">
                         </xmlfile>
@@ -470,7 +473,7 @@
                             matches="//*[@value='org.hibernate.transaction.OC4JTransactionManagerLookup']/@value"
                             xpathResultMatch="org.hibernate.transaction.OC4JTransactionManagerLookup$" from="1">
                         </xmlfile>
-
+			</when>
                         <iteration over="1">
                             <hint message="OC4J (Oracle) AS Specific" effort="0">
                             </hint>
@@ -482,7 +485,7 @@
                         </iteration>
                     </iteration>
                     <iteration over="JPA2">
-
+			<when>
                         <xmlfile as="1"
                             matches="//*[@value='org.hibernate.transaction.OrionTransactionManagerLookup']/@value" from="JPA2_instance">
                         </xmlfile>
@@ -490,7 +493,7 @@
                             matches="//*[@value='org.hibernate.transaction.OrionTransactionManagerLookup']/@value"
                             xpathResultMatch="org.hibernate.transaction.OrionTransactionManagerLookup$" from="1">
                         </xmlfile>
-
+			</when>
                         <iteration over="1">
                             <hint message="Orion Specific" effort="0">
                             </hint>
@@ -502,7 +505,7 @@
                         </iteration>
                     </iteration>
                     <iteration over="JPA2">
-
+			<when>
                         <xmlfile as="1"
                             matches="//*[@value='org.hibernate.transaction.ResinTransactionManagerLookup']/@value" from="JPA2_instance">
                         </xmlfile>
@@ -510,7 +513,7 @@
                             matches="//*[@value='org.hibernate.transaction.ResinTransactionManagerLookup']/@value"
                             xpathResultMatch="org.hibernate.transaction.ResinTransactionManagerLookup$" from="1">
                         </xmlfile>
-
+			</when>
                         <iteration over="1">
                             <hint message="Resin Specific" effort="0">
                             </hint>
@@ -522,7 +525,7 @@
                         </iteration>
                     </iteration>
                     <iteration over="JPA2">
-
+			<when>
                         <xmlfile as="1"
                             matches="//*[@value='org.hibernate.transaction.SunONETransactionManagerLookup']/@value"
                             from="JPA2_instance">
@@ -531,7 +534,7 @@
                             matches="//*[@value='org.hibernate.transaction.SunONETransactionManagerLookup']/@value"
                             xpathResultMatch="org.hibernate.transaction.SunONETransactionManagerLookup$" from="1">
                         </xmlfile>
-
+			</when>
                         <iteration over="1">
                             <hint message="Sun ONE Application Server Specific" effort="0">
                             </hint>
@@ -614,14 +617,14 @@
                     <classification classification="Hibernate Configuration" effort="0" />
                 </iteration>
                 <iteration over="hibernate">
-
+			<when>
                     <xmlfile as="1" matches="//*[@value='org.hibernate.transaction.JOnASTransactionManagerLookup']/@value"
                         from="hibernate_instance">
                     </xmlfile>
                     <xmlfile as="2" matches="//*[@value='org.hibernate.transaction.JOnASTransactionManagerLookup']/@value"
                         xpathResultMatch="org.hibernate.transaction.JOnASTransactionManagerLookup$" from="1">
                     </xmlfile>
-
+			</when>
                     <iteration over="1">
                         <hint message="JOnAS Specific" effort="1">
                         </hint>
@@ -633,14 +636,14 @@
                     </iteration>
                 </iteration>
                 <iteration over="hibernate">
-
+			<when>
                     <xmlfile as="1" matches="//*[@value='org.hibernate.transaction.JOTMTransactionManagerLookup']/@value"
                         from="hibernate_instance">
                     </xmlfile>
                     <xmlfile as="2" matches="//*[@value='org.hibernate.transaction.JOTMTransactionManagerLookup']/@value"
                         xpathResultMatch="org.hibernate.transaction.JOTMTransactionManagerLookup$" from="1">
                     </xmlfile>
-
+			</when>
                     <iteration over="1">
                         <hint message="JOTM Specific" effort="1">
                         </hint>
@@ -652,7 +655,7 @@
                     </iteration>
                 </iteration>
                 <iteration over="hibernate">
-
+			<when>
                     <xmlfile as="1"
                         matches="//*[@value='org.hibernate.transaction.WebSphereExtendedJTATransactionLookup']/@value"
                         from="hibernate_instance">
@@ -661,7 +664,7 @@
                         matches="//*[@value='org.hibernate.transaction.WebSphereExtendedJTATransactionLookup']/@value"
                         xpathResultMatch="org.hibernate.transaction.WebSphereExtendedJTATransactionLookup$" from="1">
                     </xmlfile>
-
+			</when>
                     <iteration over="1">
                         <hint message="Websphere Specific" effort="1">
                         </hint>
@@ -673,7 +676,7 @@
                     </iteration>
                 </iteration>
                 <iteration over="hibernate">
-
+			<when>
                     <xmlfile as="1"
                         matches="//*[@value='org.hibernate.transaction.WebSphereTransactionManagerLookup']/@value | //property[@name='transaction.manager_lookup_class' and .='org.hibernate.transaction.WebSphereTransactionManagerLookup']/text()"
                         from="hibernate_instance">
@@ -682,7 +685,7 @@
                         matches="//*[@value='org.hibernate.transaction.WebSphereTransactionManagerLookup']/@value | //property[@name='transaction.manager_lookup_class' and .='org.hibernate.transaction.WebSphereTransactionManagerLookup']/text()"
                         xpathResultMatch="org.hibernate.transaction.WebSphereTransactionManagerLookup$" from="1">
                     </xmlfile>
-
+			</when>
                     <iteration over="1">
                         <hint message="Websphere Specific" effort="1">
                         </hint>
@@ -694,7 +697,7 @@
                     </iteration>
                 </iteration>
                 <iteration over="hibernate">
-
+			<when>
                     <xmlfile as="1"
                         matches="//*[@value='org.hibernate.transaction.WeblogicTransactionManagerLookup']/@value | //property[@name='transaction.manager_lookup_class' and .='org.hibernate.transaction.WeblogicTransactionManagerLookup']/text()"
                         from="hibernate_instance">
@@ -703,7 +706,7 @@
                         matches="//*[@value='org.hibernate.transaction.WeblogicTransactionManagerLookup']/@value | //property[@name='transaction.manager_lookup_class' and .='org.hibernate.transaction.WeblogicTransactionManagerLookup']/text()"
                         xpathResultMatch="org.hibernate.transaction.WeblogicTransactionManagerLookup$" from="1">
                     </xmlfile>
-
+			</when>
                     <iteration over="1">
                         <hint message="Weblogic Specific" effort="1">
                         </hint>
@@ -715,14 +718,14 @@
                     </iteration>
                 </iteration>
                 <iteration over="hibernate">
-
+			<when>
                     <xmlfile as="1" matches="//*[@value='org.hibernate.transaction.BESTransactionManagerLookup']/@value"
                         from="hibernate_instance">
                     </xmlfile>
                     <xmlfile as="2" matches="//*[@value='org.hibernate.transaction.BESTransactionManagerLookup']/@value"
                         xpathResultMatch="org.hibernate.transaction.BESTransactionManagerLookup$" from="1">
                     </xmlfile>
-
+			</when>
                     <iteration over="1">
                         <hint message="Borland ES Specific" effort="0">
                         </hint>
@@ -734,14 +737,14 @@
                     </iteration>
                 </iteration>
                 <iteration over="hibernate">
-
+			<when>
                     <xmlfile as="1" matches="//*[@value='org.hibernate.transaction.JRun4TransactionManagerLookup']/@value"
                         from="hibernate_instance">
                     </xmlfile>
                     <xmlfile as="2" matches="//*[@value='org.hibernate.transaction.JRun4TransactionManagerLookup']/@value"
                         xpathResultMatch="org.hibernate.transaction.JRun4TransactionManagerLookup$" from="1">
                     </xmlfile>
-
+			</when>
                     <iteration over="1">
                         <hint message="JRun4 AS Specific" effort="0">
                         </hint>
@@ -753,14 +756,14 @@
                     </iteration>
                 </iteration>
                 <iteration over="hibernate">
-
+			<when>
                     <xmlfile as="1" matches="//*[@value='org.hibernate.transaction.OC4JTransactionManagerLookup']/@value"
                         from="hibernate_instance">
                     </xmlfile>
                     <xmlfile as="2" matches="//*[@value='org.hibernate.transaction.OC4JTransactionManagerLookup']/@value"
                         xpathResultMatch="org.hibernate.transaction.OC4JTransactionManagerLookup$" from="1">
                     </xmlfile>
-
+			</when>
                     <iteration over="1">
                         <hint message="OC4J (Oracle) AS Specific" effort="0">
                         </hint>
@@ -772,14 +775,14 @@
                     </iteration>
                 </iteration>
                 <iteration over="hibernate">
-
+			<when>
                     <xmlfile as="1" matches="//*[@value='org.hibernate.transaction.OrionTransactionManagerLookup']/@value"
                         from="hibernate_instance">
                     </xmlfile>
                     <xmlfile as="2" matches="//*[@value='org.hibernate.transaction.OrionTransactionManagerLookup']/@value"
                         xpathResultMatch="org.hibernate.transaction.OrionTransactionManagerLookup$" from="1">
                     </xmlfile>
-
+			</when>
                     <iteration over="1">
                         <hint message="Orion Specific" effort="0">
                         </hint>
@@ -791,14 +794,14 @@
                     </iteration>
                 </iteration>
                 <iteration over="hibernate">
-
+			<when>
                     <xmlfile as="1" matches="//*[@value='org.hibernate.transaction.ResinTransactionManagerLookup']/@value"
                         from="hibernate_instance">
                     </xmlfile>
                     <xmlfile as="2" matches="//*[@value='org.hibernate.transaction.ResinTransactionManagerLookup']/@value"
                         xpathResultMatch="org.hibernate.transaction.ResinTransactionManagerLookup$" from="1">
                     </xmlfile>
-
+			</when>
                     <iteration over="1">
                         <hint message="Resin Specific" effort="0">
                         </hint>
@@ -810,14 +813,14 @@
                     </iteration>
                 </iteration>
                 <iteration over="hibernate">
-
+			<when>
                     <xmlfile as="1" matches="//*[@value='org.hibernate.transaction.SunONETransactionManagerLookup']/@value"
                         from="hibernate_instance">
                     </xmlfile>
                     <xmlfile as="2" matches="//*[@value='org.hibernate.transaction.SunONETransactionManagerLookup']/@value"
                         xpathResultMatch="org.hibernate.transaction.SunONETransactionManagerLookup$" from="1">
                     </xmlfile>
-
+			</when>
                     <iteration over="1">
                         <hint message="Sun ONE Application Server Specific" effort="0">
                         </hint>
