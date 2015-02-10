@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<ruleset xmlns="http://windup.jboss.org/v1/xml" id="XmlFileMappings">
+    <rules>
+        <rule>
+           <file-mapping from=".*\.tld$" to="XmlFileModel"/>
+        </rule>
+	<rule>
+           <file-mapping from=".*\.bpel$" to="XmlFileModel"/>
+        </rule>
+	<rule>
+           <file-mapping from=".*\.wsdl$" to="XmlFileModel"/>
+        </rule>
+	<rule>
+           <file-mapping from=".*\.wsdd$" to="XmlFileModel"/>
+        </rule>
+	<rule>
+           <file-mapping from=".*\.bpelex$" to="XmlFileModel"/>
+        </rule>
+	<rule>
+           <file-mapping from=".*\.mon$" to="XmlFileModel"/>
+        </rule>
+	<rule>
+           <file-mapping from=".*\.xmi$" to="XmlFileModel"/>
+        </rule>
+	<rule>
+           <file-mapping from=".*\.export$" to="XmlFileModel"/>
+        </rule>
+	<rule>
+           <file-mapping from=".*\.import$" to="XmlFileModel"/>
+        </rule>
+	<rule>
+           <file-mapping from=".*\.bcfg$" to="XmlFileModel"/>
+        </rule>
+	<rule>
+           <file-mapping from=".*\.map$" to="XmlFileModel"/>
+        </rule>
+	<rule>
+           <file-mapping from=".*\.brg$" to="XmlFileModel"/>
+        </rule>
+	<rule>
+           <file-mapping from=".*\.brgt$" to="XmlFileModel"/>
+        </rule>
+	<rule>
+           <file-mapping from=".*\.ruleset$" to="XmlFileModel"/>
+        </rule>
+	<rule>
+           <file-mapping from=".*\.module$" to="XmlFileModel"/>
+        </rule>
+	<rule>
+           <file-mapping from=".*\.modulex$" to="XmlFileModel"/>
+        </rule>
+	<rule>
+           <file-mapping from=".*\.composite$" to="XmlFileModel"/>
+        </rule>
+	<rule>
+           <file-mapping from=".*\.requirements$" to="XmlFileModel"/>
+        </rule>
+    </rules>
+</ruleset>
+
