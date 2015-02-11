@@ -16,7 +16,7 @@ public enum TypeReferenceLocation
     METHOD_PARAMETER("Method parameter"),
     ANNOTATION("References annotation"),
     RETURN_TYPE("Returns type"),
-    INSTANCE_OF("Instance of type"),
+    INSTANCE_OF("Instance of expression"),
     THROWS_METHOD_DECLARATION("Throws"),
     THROW_STATEMENT("Throw"),
     CATCH_EXCEPTION_STATEMENT("Catches exception"),
