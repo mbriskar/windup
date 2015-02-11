@@ -1,12 +1,15 @@
-package org.jboss.windup.rules.java;
+package org.jboss.windup.rules.apps.java.scan.ast;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.List;
+import java.util.logging.Logger;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.RandomStringUtils;
@@ -17,6 +20,12 @@ import org.jboss.forge.arquillian.Dependencies;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.windup.config.GraphRewrite;
+import org.jboss.windup.config.RuleSubset;
+import org.jboss.windup.config.WindupRuleProvider;
+import org.jboss.windup.config.operation.Iteration;
+import org.jboss.windup.config.operation.ruleelement.AbstractIterationOperation;
+import org.jboss.windup.engine.predicates.RuleProviderWithDependenciesPredicate;
 import org.jboss.windup.exec.WindupProcessor;
 import org.jboss.windup.exec.configuration.WindupConfiguration;
 import org.jboss.windup.graph.GraphContext;
@@ -24,15 +33,18 @@ import org.jboss.windup.graph.GraphContextFactory;
 import org.jboss.windup.graph.model.ProjectModel;
 import org.jboss.windup.graph.model.resource.FileModel;
 import org.jboss.windup.graph.service.GraphService;
-import org.jboss.windup.reporting.model.InlineHintModel;
+import org.jboss.windup.rules.apps.java.condition.JavaClass;
 import org.jboss.windup.rules.apps.java.config.ScanPackagesOption;
-import org.jboss.windup.rules.apps.java.scan.ast.JavaTypeReferenceModel;
+import org.jboss.windup.rules.apps.java.scan.provider.AnalyzeJavaFilesRuleProvider;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.ocpsoft.rewrite.config.Configuration;
+import org.ocpsoft.rewrite.config.ConfigurationBuilder;
+import org.ocpsoft.rewrite.context.EvaluationContext;
 
 @RunWith(Arquillian.class)
-public class JavaClassXmlRulesTest
+public class VariableASTResolvingIntegrationTest
 {
     @Deployment
     @Dependencies({
@@ -46,8 +58,8 @@ public class JavaClassXmlRulesTest
     {
         final ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
                     .addBeansXML()
-                    .addClass(JavaClassXmlRulesTest.class)
-                    .addAsResource("org/jboss/windup/rules/java/JavaClassXmlRulesTest.windup.xml")
+                    .addClass(JavaClassTestRuleProvider.class)
+                    .addClass(VariableASTResolvingIntegrationTest.class)
                     .addAsAddonDependencies(
                                 AddonDependencyEntry.create("org.jboss.windup.config:windup-config"),
                                 AddonDependencyEntry.create("org.jboss.windup.exec:windup-exec"),
@@ -60,6 +72,9 @@ public class JavaClassXmlRulesTest
     }
 
     @Inject
+    JavaClassTestRuleProvider provider;
+
+    @Inject
     private WindupProcessor processor;
 
     @Inject
@@ -70,7 +85,7 @@ public class JavaClassXmlRulesTest
     {
         try (GraphContext context = factory.create(getDefaultPath()))
         {
-            final String inputDir = "src/test/resources/org/jboss/windup/rules/java";
+            final String inputDir = "src/test/resources/simple";
 
             final Path outputPath = Paths.get(FileUtils.getTempDirectory().toString(),
                         "windup_" + RandomStringUtils.randomAlphanumeric(6));
@@ -88,18 +103,36 @@ public class JavaClassXmlRulesTest
             pm.setRootFileModel(inputPathFrame);
 
             FileModel fileModel = context.getFramed().addVertex(null, FileModel.class);
-            fileModel.setFilePath(inputDir + "/JavaClassTestFile1.java");
+            fileModel.setFilePath(inputDir + "/Main.java");
             fileModel.setProjectModel(pm);
             pm.addFileModel(fileModel);
 
             fileModel = context.getFramed().addVertex(null, FileModel.class);
-            fileModel.setFilePath(inputDir + "/JavaClassTestFile2.java");
+            fileModel.setFilePath(inputDir + "/MyAClass.java");
+            fileModel.setProjectModel(pm);
+            pm.addFileModel(fileModel);
+            
+            fileModel = context.getFramed().addVertex(null, FileModel.class);
+            fileModel.setFilePath(inputDir + "/MyBClass.java");
+            fileModel.setProjectModel(pm);
+            pm.addFileModel(fileModel);
+            
+            fileModel = context.getFramed().addVertex(null, FileModel.class);
+            fileModel.setFilePath(inputDir + "/SomeInterface.java");
+            fileModel.setProjectModel(pm);
+            pm.addFileModel(fileModel);
+            
+            fileModel = context.getFramed().addVertex(null, FileModel.class);
+            fileModel.setFilePath(inputDir + "/ClassReturningAnother.java");
             fileModel.setProjectModel(pm);
             pm.addFileModel(fileModel);
 
+
             context.getGraph().getBaseGraph().commit();
 
-            final WindupConfiguration processorConfig = new WindupConfiguration().setOutputDirectory(outputPath);
+            final WindupConfiguration processorConfig = new WindupConfiguration();
+            processorConfig.setRuleProviderFilter(new RuleProviderWithDependenciesPredicate(
+                        JavaClassTestRuleProvider.class));
             processorConfig.setGraphContext(context);
             processorConfig.setInputPath(Paths.get(inputDir));
             processorConfig.setOutputDirectory(outputPath);
@@ -110,41 +143,77 @@ public class JavaClassXmlRulesTest
             GraphService<JavaTypeReferenceModel> typeRefService = new GraphService<>(context,
                         JavaTypeReferenceModel.class);
             Iterable<JavaTypeReferenceModel> typeReferences = typeRefService.findAll();
+            Assert.assertTrue(typeReferences.iterator().hasNext());
 
-            int count = 0;
-            for (JavaTypeReferenceModel ref : typeReferences)
-            {
-                String sourceSnippit = ref.getSourceSnippit();
-                Assert.assertTrue(sourceSnippit.contains("org.apache.commons")
-                            || sourceSnippit.contains("org.jboss.windup.rules.java.JavaClassTestFile"));
-                count++;
-            }
-            Assert.assertEquals(13, count);
-
-            GraphService<InlineHintModel> hintService = new GraphService<>(context, InlineHintModel.class);
-            Iterable<InlineHintModel> hints = hintService.findAll();
-
-            count = 0;
-            for (InlineHintModel hint : hints)
-            {
-                if (hint.getHint().contains("Rule1"))
-                    count++;
-            }
-            Assert.assertEquals(3, count);
-
-            count = 0;
-            for (InlineHintModel hint : hints)
-            {
-                if (hint.getHint().contains("Rule2"))
-                    count++;
-            }
-            Assert.assertEquals(3, count);
+           
+            Assert.assertEquals(2, provider.getMyAclassTypeDeclaration());
+            Assert.assertEquals(1, provider.getInterfaceCall());
         }
     }
+    
+    
 
     private Path getDefaultPath()
     {
         return FileUtils.getTempDirectory().toPath().resolve("Windup")
                     .resolve("windupgraph_javaclasstest_" + RandomStringUtils.randomAlphanumeric(6));
+    }
+
+    @Singleton
+    public static class JavaClassTestRuleProvider extends WindupRuleProvider
+    {
+        private static Logger log = Logger.getLogger(RuleSubset.class.getName());
+
+        private int myAclassTypeDeclaration = 0;
+        private int interfaceCall = 0;
+
+        // @formatter:off
+        @Override
+        public Configuration getConfiguration(GraphContext context)
+        {
+            return ConfigurationBuilder.begin()
+            .addRule().when(
+                JavaClass.references("simple.MyAClass").at(TypeReferenceLocation.TYPE)
+            ).perform(
+                Iteration.over().perform(new AbstractIterationOperation<JavaTypeReferenceModel>()
+                {
+                    @Override
+                    public void perform(GraphRewrite event, EvaluationContext context, JavaTypeReferenceModel payload)
+                    {
+                        myAclassTypeDeclaration++;
+                    }
+                }).endIteration()
+            )
+                    
+            .addRule().when(
+                JavaClass.references("simple.SomeInterface.interfaceMethod()").at(TypeReferenceLocation.METHOD_CALL)
+            ).perform(
+                Iteration.over().perform(new AbstractIterationOperation<JavaTypeReferenceModel>()
+                {
+                    @Override
+                    public void perform(GraphRewrite event, EvaluationContext context, JavaTypeReferenceModel payload)
+                    {
+                        interfaceCall++;
+                    }
+                }).endIteration()
+            );
+        }
+        // @formatter:on
+
+        public int getMyAclassTypeDeclaration()
+        {
+            return myAclassTypeDeclaration;
+        }
+
+        public int getInterfaceCall()
+        {
+            return interfaceCall;
+        }
+
+        @Override
+        public List<Class<? extends WindupRuleProvider>> getExecuteAfter()
+        {
+            return asClassList(AnalyzeJavaFilesRuleProvider.class);
+        }
     }
 }
