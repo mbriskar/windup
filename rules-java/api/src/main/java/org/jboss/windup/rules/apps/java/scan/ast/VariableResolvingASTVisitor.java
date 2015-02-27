@@ -32,8 +32,6 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
-import org.eclipse.jdt.core.dom.IAnnotationBinding;
-import org.eclipse.jdt.core.dom.IMemberValuePairBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
@@ -44,7 +42,6 @@ import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.MemberValuePair;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
-import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.NumberLiteral;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
@@ -71,6 +68,10 @@ import org.jboss.windup.util.Logging;
  * Runs through the source code and checks "type" uses against the blacklisted class entries.
  * 
  * @author bradsdavis
+ * @author jsightle
+ * @author lincolnthree
+ * @author mbriskar
+ * @author ozizka
  */
 public class VariableResolvingASTVisitor extends ASTVisitor
 {
@@ -155,16 +156,20 @@ public class VariableResolvingASTVisitor extends ASTVisitor
             {
                 typeRefService.createTypeReference(fileModel, TypeReferenceLocation.TYPE, cu.getLineNumber(typeDeclaration.getStartPosition()),
                             cu.getColumnNumber(cu.getStartPosition()), cu.getLength(), this.fqcn);
-                
+
                 Type superclassType = typeDeclaration.getSuperclassType();
-                ITypeBinding resolveBinding=null;
-                if(superclassType!=null) {
-                   resolveBinding = superclassType.resolveBinding();
+                ITypeBinding resolveBinding = null;
+                if (superclassType != null)
+                {
+                    resolveBinding = superclassType.resolveBinding();
                 }
-               
-                while(resolveBinding != null) {
-                    if(superclassType.resolveBinding() !=null) {
-                        typeRefService.createTypeReference(fileModel, TypeReferenceLocation.TYPE, cu.getLineNumber(typeDeclaration.getStartPosition()),
+
+                while (resolveBinding != null)
+                {
+                    if (superclassType.resolveBinding() != null)
+                    {
+                        typeRefService.createTypeReference(fileModel, TypeReferenceLocation.TYPE,
+                                    cu.getLineNumber(typeDeclaration.getStartPosition()),
                                     cu.getColumnNumber(cu.getStartPosition()), cu.getLength(), resolveBinding.getQualifiedName());
                     }
                     resolveBinding = resolveBinding.getSuperclass();
@@ -425,8 +430,10 @@ public class VariableResolvingASTVisitor extends ASTVisitor
         }
         return true;
     }
+
     /**
      * Adds parameters contained in the annotation into the annotation type reference
+     * 
      * @param typeRef
      * @param node
      */
@@ -453,36 +460,42 @@ public class VariableResolvingASTVisitor extends ASTVisitor
     public boolean visit(MarkerAnnotation node)
     {
         ITypeBinding resolveTypeBinding = node.resolveTypeBinding();
-        if(resolveTypeBinding != null) {
+        if (resolveTypeBinding != null)
+        {
             processType(resolveTypeBinding, TypeReferenceLocation.ANNOTATION, cu.getLineNumber(node.getStartPosition()),
                         cu.getColumnNumber(cu.getStartPosition()), cu.getLength());
-        } else {
+        }
+        else
+        {
             String resolved = resolveClassname(node.getTypeName().toString());
             processTypeAsString(resolved, TypeReferenceLocation.ANNOTATION, cu.getLineNumber(node.getStartPosition()),
                         cu.getColumnNumber(cu.getStartPosition()), cu.getLength());
         }
-        
+
         return super.visit(node);
     }
 
     @Override
     public boolean visit(NormalAnnotation node)
     {
-         ITypeBinding resolveTypeBinding = node.resolveTypeBinding();
-         JavaTypeReferenceModel typeRef;
-         if(resolveTypeBinding!= null) {
-             typeRef= processType(node.resolveTypeBinding(), TypeReferenceLocation.ANNOTATION,
-                         cu.getLineNumber(node.getStartPosition()),
-                         cu.getColumnNumber(node.getStartPosition()), node.getLength());
-         } else {
-             String name = node.getTypeName().toString();
-             String resolved = resolveClassname(name);
-             typeRef= processTypeAsString(resolved, TypeReferenceLocation.ANNOTATION,
-                         cu.getLineNumber(node.getStartPosition()),
-                         cu.getColumnNumber(node.getStartPosition()), node.getLength());
-         }
+        ITypeBinding resolveTypeBinding = node.resolveTypeBinding();
+        JavaTypeReferenceModel typeRef;
+        if (resolveTypeBinding != null)
+        {
+            typeRef = processType(node.resolveTypeBinding(), TypeReferenceLocation.ANNOTATION,
+                        cu.getLineNumber(node.getStartPosition()),
+                        cu.getColumnNumber(node.getStartPosition()), node.getLength());
+        }
+        else
+        {
+            String name = node.getTypeName().toString();
+            String resolved = resolveClassname(name);
+            typeRef = processTypeAsString(resolved, TypeReferenceLocation.ANNOTATION,
+                        cu.getLineNumber(node.getStartPosition()),
+                        cu.getColumnNumber(node.getStartPosition()), node.getLength());
+        }
         if (typeRef != null)
-            //provide parameters of the annotation
+            // provide parameters of the annotation
             addAnnotationValues((JavaAnnotationTypeReferenceModel) typeRef, node);
         return super.visit(node);
     }
@@ -492,16 +505,19 @@ public class VariableResolvingASTVisitor extends ASTVisitor
     {
         // field annotation
         ITypeBinding resolveTypeBinding = node.resolveTypeBinding();
-        if(resolveTypeBinding != null) {
+        if (resolveTypeBinding != null)
+        {
             processType(resolveTypeBinding, TypeReferenceLocation.ANNOTATION, cu.getLineNumber(node.getStartPosition()),
                         cu.getColumnNumber(node.getStartPosition()), node.getLength());
-        } else {
+        }
+        else
+        {
             String name = node.getTypeName().toString();
             String resolved = resolveClassname(name);
             processTypeAsString(resolved, TypeReferenceLocation.ANNOTATION, cu.getLineNumber(node.getStartPosition()),
                         cu.getColumnNumber(node.getStartPosition()), node.getLength());
         }
-        
+
         return super.visit(node);
     }
 
@@ -528,7 +544,8 @@ public class VariableResolvingASTVisitor extends ASTVisitor
                             resolvedSuperInterface = stack.pop();
                             processType(resolvedSuperInterface, TypeReferenceLocation.IMPLEMENTS_TYPE, cu.getLineNumber(node.getStartPosition()),
                                         cu.getColumnNumber(node.getStartPosition()), node.getLength());
-                            if(resolvedSuperInterface !=null) {
+                            if (resolvedSuperInterface != null)
+                            {
                                 ITypeBinding[] interfaces = resolvedSuperInterface.getInterfaces();
                                 for (ITypeBinding oneInterface : interfaces)
                                 {
@@ -581,16 +598,18 @@ public class VariableResolvingASTVisitor extends ASTVisitor
             this.nameInstance.put(frag.getName().toString(), nodeType.toString());
         }
         ITypeBinding resolveBinding = node.getType().resolveBinding();
-        if(resolveBinding !=null) {
+        if (resolveBinding != null)
+        {
             processType(node.getType().resolveBinding(), TypeReferenceLocation.VARIABLE_DECLARATION, cu.getLineNumber(node.getStartPosition()),
                         cu.getColumnNumber(node.getStartPosition()), node.getLength());
-        } else {
+        }
+        else
+        {
             String nodeType = node.getType().toString();
             nodeType = resolveClassname(nodeType);
             processTypeAsString(nodeType, TypeReferenceLocation.VARIABLE_DECLARATION, cu.getLineNumber(node.getStartPosition()),
                         cu.getColumnNumber(node.getStartPosition()), node.getLength());
         }
-        
 
         return super.visit(node);
     }

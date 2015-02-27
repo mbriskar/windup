@@ -30,8 +30,6 @@ import org.jboss.windup.exec.WindupProcessor;
 import org.jboss.windup.exec.configuration.WindupConfiguration;
 import org.jboss.windup.graph.GraphContext;
 import org.jboss.windup.graph.GraphContextFactory;
-import org.jboss.windup.graph.model.ProjectModel;
-import org.jboss.windup.graph.model.resource.FileModel;
 import org.jboss.windup.graph.service.GraphService;
 import org.jboss.windup.rules.apps.java.condition.JavaClass;
 import org.jboss.windup.rules.apps.java.config.ScanPackagesOption;
@@ -44,13 +42,13 @@ import org.ocpsoft.rewrite.config.ConfigurationBuilder;
 import org.ocpsoft.rewrite.context.EvaluationContext;
 
 @RunWith(Arquillian.class)
-public class VariableASTResolvingIntegrationTest
+public class VariableResolvingASTIntegrationTest
 {
     @Deployment
     @Dependencies({
                 @AddonDependency(name = "org.jboss.windup.config:windup-config"),
                 @AddonDependency(name = "org.jboss.windup.exec:windup-exec"),
-                @AddonDependency(name = "org.jboss.windup.rules.apps:rules-java"),
+                @AddonDependency(name = "org.jboss.windup.rules.apps:windup-rules-java"),
                 @AddonDependency(name = "org.jboss.windup.reporting:windup-reporting"),
                 @AddonDependency(name = "org.jboss.forge.furnace.container:cdi")
     })
@@ -59,11 +57,11 @@ public class VariableASTResolvingIntegrationTest
         final ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
                     .addBeansXML()
                     .addClass(JavaClassTestRuleProvider.class)
-                    .addClass(VariableASTResolvingIntegrationTest.class)
+                    .addClass(VariableResolvingASTIntegrationTest.class)
                     .addAsAddonDependencies(
                                 AddonDependencyEntry.create("org.jboss.windup.config:windup-config"),
                                 AddonDependencyEntry.create("org.jboss.windup.exec:windup-exec"),
-                                AddonDependencyEntry.create("org.jboss.windup.rules.apps:rules-java"),
+                                AddonDependencyEntry.create("org.jboss.windup.rules.apps:windup-rules-java"),
                                 AddonDependencyEntry.create("org.jboss.windup.reporting:windup-reporting"),
                                 AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi")
                     );
@@ -81,7 +79,7 @@ public class VariableASTResolvingIntegrationTest
     private GraphContextFactory factory;
 
     @Test
-    public void testJavaClassCondition() throws IOException, InstantiationException, IllegalAccessException
+    public void testJavaSourceScanning() throws IOException, InstantiationException, IllegalAccessException
     {
         try (GraphContext context = factory.create(getDefaultPath()))
         {
@@ -91,44 +89,6 @@ public class VariableASTResolvingIntegrationTest
                         "windup_" + RandomStringUtils.randomAlphanumeric(6));
             FileUtils.deleteDirectory(outputPath.toFile());
             Files.createDirectories(outputPath);
-
-            ProjectModel pm = context.getFramed().addVertex(null, ProjectModel.class);
-            pm.setName("Main Project");
-
-            FileModel inputPathFrame = context.getFramed().addVertex(null, FileModel.class);
-            inputPathFrame.setFilePath(inputDir);
-            inputPathFrame.setProjectModel(pm);
-            pm.addFileModel(inputPathFrame);
-
-            pm.setRootFileModel(inputPathFrame);
-
-            FileModel fileModel = context.getFramed().addVertex(null, FileModel.class);
-            fileModel.setFilePath(inputDir + "/Main.java");
-            fileModel.setProjectModel(pm);
-            pm.addFileModel(fileModel);
-
-            fileModel = context.getFramed().addVertex(null, FileModel.class);
-            fileModel.setFilePath(inputDir + "/MyAClass.java");
-            fileModel.setProjectModel(pm);
-            pm.addFileModel(fileModel);
-            
-            fileModel = context.getFramed().addVertex(null, FileModel.class);
-            fileModel.setFilePath(inputDir + "/MyBClass.java");
-            fileModel.setProjectModel(pm);
-            pm.addFileModel(fileModel);
-            
-            fileModel = context.getFramed().addVertex(null, FileModel.class);
-            fileModel.setFilePath(inputDir + "/SomeInterface.java");
-            fileModel.setProjectModel(pm);
-            pm.addFileModel(fileModel);
-            
-            fileModel = context.getFramed().addVertex(null, FileModel.class);
-            fileModel.setFilePath(inputDir + "/ClassReturningAnother.java");
-            fileModel.setProjectModel(pm);
-            pm.addFileModel(fileModel);
-
-
-            context.getGraph().getBaseGraph().commit();
 
             final WindupConfiguration processorConfig = new WindupConfiguration();
             processorConfig.setRuleProviderFilter(new RuleProviderWithDependenciesPredicate(
@@ -140,18 +100,19 @@ public class VariableASTResolvingIntegrationTest
 
             processor.execute(processorConfig);
 
-            GraphService<JavaTypeReferenceModel> typeRefService = new GraphService<>(context,
-                        JavaTypeReferenceModel.class);
+            GraphService<JavaTypeReferenceModel> typeRefService = new GraphService<>(context, JavaTypeReferenceModel.class);
             Iterable<JavaTypeReferenceModel> typeReferences = typeRefService.findAll();
             Assert.assertTrue(typeReferences.iterator().hasNext());
+            for (JavaTypeReferenceModel reference : typeReferences)
+            {
+                System.out.println("Reference at: " + reference.getFile().getFileName() + ":" + reference.getLineNumber() + " to: "
+                            + reference.getSourceSnippit() + " location: " + reference.getReferenceLocation());
+            }
 
-           
             Assert.assertEquals(2, provider.getMyAclassTypeDeclaration());
             Assert.assertEquals(1, provider.getInterfaceCall());
         }
     }
-    
-    
 
     private Path getDefaultPath()
     {

@@ -20,6 +20,7 @@ import org.jboss.windup.config.phase.InitialAnalysis;
 import org.jboss.windup.config.phase.RulePhase;
 import org.jboss.windup.config.query.Query;
 import org.jboss.windup.graph.GraphContext;
+import org.jboss.windup.graph.model.resource.FileModel;
 import org.jboss.windup.graph.service.GraphService;
 import org.jboss.windup.rules.apps.java.model.JarArchiveModel;
 import org.jboss.windup.rules.apps.java.model.JavaSourceFileModel;
@@ -77,24 +78,32 @@ public class AnalyzeJavaFilesRuleProvider extends WindupRuleProvider
                 GraphService<JavaSourceFileModel> service = new GraphService<JavaSourceFileModel>(event.getGraphContext(), JavaSourceFileModel.class);
                 Iterable<JavaSourceFileModel> findAll = service.findAll();
                 Set<String> javaFilePaths = new HashSet<String>();
-                for(JavaSourceFileModel javaFile : findAll) {
-                    String filePath = javaFile.getFilePath().
-                                substring(0,javaFile.getFilePath().lastIndexOf(File.separator));
-                    javaFilePaths.add(filePath);
+                for (JavaSourceFileModel javaFile : findAll)
+                {
+                    FileModel rootSourceFolder = javaFile.getRootSourceFolder();
+                    if (rootSourceFolder != null)
+                    {
+                        javaFilePaths.add(rootSourceFolder.getFilePath());
+                    }
                 }
-                //TODO: May be adding even the project
+                // TODO: May be adding even the project
                 GraphService<JarArchiveModel> libraryService = new GraphService<JarArchiveModel>(event.getGraphContext(), JarArchiveModel.class);
                 Iterable<JarArchiveModel> libraries = libraryService.findAll();
                 List<String> librariesPaths = new ArrayList<String>();
-                for(JarArchiveModel library : libraries) {
-                    if(library.getUnzippedDirectory() != null) {
-                        librariesPaths.add(library.getUnzippedDirectory().getFilePath());  
-                    } else {
-                        librariesPaths.add(library.getFilePath());  
+                for (JarArchiveModel library : libraries)
+                {
+                    if (library.getUnzippedDirectory() != null)
+                    {
+                        librariesPaths.add(library.getUnzippedDirectory().getFilePath());
                     }
-                    
+                    else
+                    {
+                        librariesPaths.add(library.getFilePath());
+                    }
+
                 }
-                parser.setEnvironment(librariesPaths.toArray(new String[librariesPaths.size()]), javaFilePaths.toArray(new String[javaFilePaths.size()]), null, true);
+                parser.setEnvironment(librariesPaths.toArray(new String[librariesPaths.size()]),
+                            javaFilePaths.toArray(new String[javaFilePaths.size()]), null, true);
                 parser.setBindingsRecovery(true);
                 parser.setResolveBindings(true);
                 parser.setUnitName(payload.getFileName());
