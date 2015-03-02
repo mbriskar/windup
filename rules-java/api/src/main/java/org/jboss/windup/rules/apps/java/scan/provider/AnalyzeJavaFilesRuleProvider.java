@@ -104,7 +104,7 @@ public class AnalyzeJavaFilesRuleProvider extends WindupRuleProvider
                 }
                 parser.setEnvironment(librariesPaths.toArray(new String[librariesPaths.size()]),
                             javaFilePaths.toArray(new String[javaFilePaths.size()]), null, true);
-                parser.setBindingsRecovery(true);
+                parser.setBindingsRecovery(false);
                 parser.setResolveBindings(true);
                 parser.setUnitName(payload.getFileName());
                 File sourceFile = payload.asFile();

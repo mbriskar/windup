@@ -103,12 +103,6 @@ public class VariableResolvingASTIntegrationTest
             GraphService<JavaTypeReferenceModel> typeRefService = new GraphService<>(context, JavaTypeReferenceModel.class);
             Iterable<JavaTypeReferenceModel> typeReferences = typeRefService.findAll();
             Assert.assertTrue(typeReferences.iterator().hasNext());
-            for (JavaTypeReferenceModel reference : typeReferences)
-            {
-                System.out.println("Reference at: " + reference.getFile().getFileName() + ":" + reference.getLineNumber() + " to: "
-                            + reference.getSourceSnippit() + " location: " + reference.getReferenceLocation());
-            }
-
             Assert.assertEquals(2, provider.getMyAclassTypeDeclaration());
             Assert.assertEquals(1, provider.getInterfaceCall());
         }
@@ -123,8 +117,6 @@ public class VariableResolvingASTIntegrationTest
     @Singleton
     public static class JavaClassTestRuleProvider extends WindupRuleProvider
     {
-        private static Logger log = Logger.getLogger(RuleSubset.class.getName());
-
         private int myAclassTypeDeclaration = 0;
         private int interfaceCall = 0;
 
