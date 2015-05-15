@@ -17,7 +17,15 @@ import org.ocpsoft.rewrite.param.ParameterizedPatternResult;
 import org.ocpsoft.rewrite.param.RegexParameterizedPatternParser;
 import org.w3c.dom.NodeList;
 
-class XmlFileMatchesXPathFunction implements XPathFunction
+/**
+ * Windup specific XPath builtin function. Matches function may be used two check that different places within one xml have the same value
+ *
+ * EXAMPLE: /root/row[windup:matches(index/text(), '{index}')]/@indexAtt[windup:matches(self::node(), '{index}')]
+ * Checks that both nodes have the same value (referenced using index parameter).
+ *
+ * Note: windup is a namespace binding (currently http://windup.jboss.org/windupv2functions)
+ */
+public class XmlFileMatchesXPathFunction implements XPathFunction
 {
     private static Logger LOG = Logging.get(XmlFileMatchesXPathFunction.class);
 
@@ -26,13 +34,14 @@ class XmlFileMatchesXPathFunction implements XPathFunction
     private final XmlFileParameterMatchCache paramMatchCache;
     private final GraphRewrite event;
 
-    XmlFileMatchesXPathFunction(EvaluationContext context, ParameterStore store, XmlFileParameterMatchCache paramMatchCache, GraphRewrite event)
+    public XmlFileMatchesXPathFunction(EvaluationContext context, ParameterStore store, XmlFileParameterMatchCache paramMatchCache, GraphRewrite event)
     {
         this.context = context;
         this.store = store;
         this.paramMatchCache = paramMatchCache;
         this.event = event;
     }
+
 
     @Override
     public Object evaluate(@SuppressWarnings("rawtypes") List args) throws XPathFunctionException

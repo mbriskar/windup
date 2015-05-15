@@ -27,6 +27,7 @@ import org.jboss.windup.config.parameters.ParameterizedGraphCondition;
 import org.jboss.windup.graph.GraphContext;
 import org.jboss.windup.graph.model.WindupVertexFrame;
 import org.jboss.windup.graph.service.GraphService;
+import org.jboss.windup.rules.apps.xml.condition.scan.XMLXpathInterestFactory;
 import org.jboss.windup.rules.apps.xml.model.DoctypeMetaModel;
 import org.jboss.windup.rules.apps.xml.model.NamespaceMetaModel;
 import org.jboss.windup.rules.apps.xml.model.XmlFileModel;
@@ -63,8 +64,8 @@ public class XmlFile extends ParameterizedGraphCondition implements XmlFileDTD, 
     protected static final String UNPARSEABLE_XML_CLASSIFICATION = "Unparseable XML File";
     protected static final String UNPARSEABLE_XML_DESCRIPTION = "This file could not be parsed via XPath";
 
-    protected static final String WINDUP_NS_PREFIX = "windup";
-    protected static final String WINDUP_NS_URI = "http://windup.jboss.org/windupv2functions";
+    public static final String WINDUP_NS_PREFIX = "windup";
+    public static final String WINDUP_NS_URI = "http://windup.jboss.org/windupv2functions";
 
     private static XPathFactory factory = XPathFactory.newInstance();
     private final XmlFileFunctionResolver xmlFileFunctionResolver;
@@ -77,6 +78,7 @@ public class XmlFile extends ParameterizedGraphCondition implements XmlFileDTD, 
     private String xpathResultMatch;
 
     // just to extract required parameter names
+    //TODO: Is this even needed now?
     private RegexParameterizedPatternParser xpathPattern;
 
     private RegexParameterizedPatternParser fileNamePattern;
@@ -176,7 +178,7 @@ public class XmlFile extends ParameterizedGraphCondition implements XmlFileDTD, 
 
     /**
      * Specify the name of the variables to base this query on.
-     * 
+     *
      * @param fromVariable
      * @return
      */
@@ -188,8 +190,9 @@ public class XmlFile extends ParameterizedGraphCondition implements XmlFileDTD, 
     @Override
     public void setParameterStore(ParameterStore store)
     {
-        if (this.xpathPattern != null)
+        if (this.xpathString != null)
         {
+            XMLXpathInterestFactory.registerInterest(xpathString,namespaces);
             this.xpathPattern.setParameterStore(store);
         }
     }
@@ -387,6 +390,7 @@ public class XmlFile extends ParameterizedGraphCondition implements XmlFileDTD, 
             }
             if (xpathString != null)
             {
+                //add windup specific funcion triggers into the xpath string
                 String xpathStringWithParameterFunctions = XmlFileXPathTransformer.transformXPath(this.xpathString);
                 LOG.fine("XmlFile compiled: " + this.xpathString + " to " + xpathStringWithParameterFunctions);
 
@@ -397,8 +401,9 @@ public class XmlFile extends ParameterizedGraphCondition implements XmlFileDTD, 
                     final ParameterStore store = DefaultParameterStore.getInstance(context);
 
                     final XmlFileParameterMatchCache paramMatchCache = new XmlFileParameterMatchCache();
+                    //register windup specific functions that are going to be triggered by xpath engine if they occur in xpath
                     this.xmlFileFunctionResolver.registerFunction(WINDUP_NS_URI, "startFrame", new XmlFileStartFrameXPathFunction(paramMatchCache));
-                    this.xmlFileFunctionResolver.registerFunction(WINDUP_NS_URI, "evaluate", new XmlFileEvaluateXPathFunction(evaluationStrategy));
+                    this.xmlFileFunctionResolver.registerFunction(WINDUP_NS_URI, "evaluate", new XmlFileEvaluateXPathFunction());
                     this.xmlFileFunctionResolver.registerFunction(WINDUP_NS_URI, "matches", new XmlFileMatchesXPathFunction(context, store,
                                 paramMatchCache, event));
                     this.xmlFileFunctionResolver.registerFunction(WINDUP_NS_URI, "persist", new XmlFilePersistXPathFunction(event, context, xml,
@@ -551,14 +556,6 @@ public class XmlFile extends ParameterizedGraphCondition implements XmlFileDTD, 
                 GraphService<NamespaceMetaModel> metaModelService = new GraphService<NamespaceMetaModel>(
                             event.getGraphContext(),
                             NamespaceMetaModel.class);
-                for (Map.Entry<String, String> namespace : namespaces.entrySet())
-                {
-                    NamespaceMetaModel metaModel = metaModelService.create();
-                    metaModel.setSchemaLocation(namespace.getKey());
-                    metaModel.setSchemaLocation(namespace.getValue());
-                    metaModel.addXmlResource(xml);
-                    fileLocation.addNamespace(metaModel);
-                }
                 resultLocations.add(fileLocation);
 
                 evaluationStrategy.modelSubmissionRejected();

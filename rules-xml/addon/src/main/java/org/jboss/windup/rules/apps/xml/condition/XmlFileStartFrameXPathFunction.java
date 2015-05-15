@@ -8,16 +8,11 @@ import javax.xml.xpath.XPathFunctionException;
 
 import org.jboss.windup.util.Logging;
 
-class XmlFileStartFrameXPathFunction implements XPathFunction
+ public class XmlFileStartFrameXPathFunction implements XPathFunction
 {
     private static Logger LOG = Logging.get(XmlFileStartFrameXPathFunction.class);
 
     private final XmlFileParameterMatchCache paramMatchCache;
-
-    XmlFileStartFrameXPathFunction(XmlFileParameterMatchCache paramMatchCache)
-    {
-        this.paramMatchCache = paramMatchCache;
-    }
 
     @Override
     public Object evaluate(@SuppressWarnings("rawtypes") List args) throws XPathFunctionException
@@ -26,5 +21,10 @@ class XmlFileStartFrameXPathFunction implements XPathFunction
         LOG.fine("startFrame(" + frameIdx + ")!");
         paramMatchCache.addFrame(frameIdx);
         return true;
+    }
+
+    public XmlFileStartFrameXPathFunction(XmlFileParameterMatchCache paramMatchCache)
+    {
+        this.paramMatchCache = paramMatchCache;
     }
 }

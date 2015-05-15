@@ -3,6 +3,10 @@ package org.jboss.windup.rules.apps.xml.condition;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Holds a map used to save parameters with their values. The parameters are used within xpath expression.
+ * For more details see {@link XmlFileMatchesXPathFunction}
+ */
 public class XmlFileParameterMatchCache
 {
     private Map<Integer, Map<String, String>> vars = new HashMap<>();
@@ -19,6 +23,13 @@ public class XmlFileParameterMatchCache
         }
     }
 
+    /**
+     * Checks that some of the previous windup blocks set the given key to given value.
+     * @param frameID id of the windup element within xpath expression
+     * @param key key to search for
+     * @param value expected value set for the key
+     * @return true if the key has the given value or if there is no such key.
+     */
     public boolean checkVariable(int frameID, String key, String value)
     {
         for (int i = frameID; i >= 0; i--)

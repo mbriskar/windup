@@ -7,8 +7,16 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
+import javax.xml.xpath.XPathFunction;
+
 /**
  * Converts an XPath from a standard xpath, to one that calls Windup's builtin functions for hooking into the XPath execution lifecycle.
+ * For supported functions consult {@link XPathFunction} implementations.
+ *
+ * Example output:
+ * /root/row[windup:startFrame(0) and windup:evaluate(0, windup:matches(0, index/text(), '{index}'))]
+ * Explanation:
+ *
  */
 public class XmlFileXPathTransformer
 {

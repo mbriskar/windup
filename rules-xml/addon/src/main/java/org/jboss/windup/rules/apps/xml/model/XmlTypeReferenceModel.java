@@ -1,5 +1,6 @@
 package org.jboss.windup.rules.apps.xml.model;
 
+import org.jboss.windup.graph.Indexed;
 import org.jboss.windup.rules.files.model.FileLocationModel;
 
 import com.tinkerpop.frames.Adjacency;
@@ -19,15 +20,7 @@ public interface XmlTypeReferenceModel extends FileLocationModel
     String getXpath();
 
     @Property(XPATH)
+    @Indexed
     void setXpath(String xpath);
-
-    @Adjacency(label = NAMESPACES)
-    Iterable<NamespaceMetaModel> getNamespaces();
-
-    @Adjacency(label = NAMESPACES)
-    void setNamespaces(Iterable<NamespaceMetaModel> children);
-
-    @Adjacency(label = NAMESPACES)
-    NamespaceMetaModel addNamespace(NamespaceMetaModel friend);
 
 }

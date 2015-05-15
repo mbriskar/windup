@@ -9,17 +9,20 @@ import javax.xml.xpath.XPathFunctionException;
 import org.jboss.windup.config.condition.EvaluationStrategy;
 import org.jboss.windup.util.Logging;
 
-class XmlFileEvaluateXPathFunction implements XPathFunction
+/**
+ * Evaluate function that evaluates that the given expression is true.
+ */
+public class XmlFileEvaluateXPathFunction implements XPathFunction
 {
     private static final Logger LOG = Logging.get(XmlFileEvaluateXPathFunction.class);
 
-    private final EvaluationStrategy evaluationStrategy;
 
-    XmlFileEvaluateXPathFunction(EvaluationStrategy evaluationStrategy)
-    {
-        this.evaluationStrategy = evaluationStrategy;
-    }
-
+    /**
+     * Evaluates that the given expression is true (for example evaluate(0,windup:mathes(...)))
+     * @param args - first argument is an ID of the windup function block, second is the expression
+     * @return expression return value (true or false)
+     * @throws XPathFunctionException
+     */
     @Override
     public Object evaluate(@SuppressWarnings("rawtypes") List args) throws XPathFunctionException
     {
