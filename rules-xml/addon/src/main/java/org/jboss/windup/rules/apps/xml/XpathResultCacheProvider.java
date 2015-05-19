@@ -17,6 +17,7 @@ import org.jboss.windup.rules.apps.xml.service.XmlFileService;
 import org.jboss.windup.util.ExecutionStatistics;
 import org.jboss.windup.util.Logging;
 import org.jboss.windup.util.xml.LocationAwareContentHandler;
+import org.jboss.windup.util.xml.NamespaceMapContext;
 import org.jboss.windup.util.xml.XmlUtil;
 import org.ocpsoft.rewrite.config.Configuration;
 import org.ocpsoft.rewrite.config.ConfigurationBuilder;
@@ -32,6 +33,7 @@ import javax.xml.xpath.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -49,8 +51,7 @@ public class XpathResultCacheProvider extends AbstractRuleProvider {
     public XpathResultCacheProvider()
     {
         super(MetadataBuilder.forProvider(XpathResultCacheProvider.class)
-                .setPhase(InitialAnalysisPhase.class)
-                .setHaltOnException(true));
+                .setPhase(InitialAnalysisPhase.class));
         xpathEngine = factory.newXPath();
         final XPathFunctionResolver originalResolver = this.xpathEngine.getXPathFunctionResolver();
         xmlFileFunctionResolver = new XmlFileFunctionResolver(originalResolver);
@@ -74,9 +75,27 @@ public class XpathResultCacheProvider extends AbstractRuleProvider {
                         final GraphContext graphContext = event.getGraphContext();
                         GraphService<XmlFileModel> xmlResourceService = new GraphService<XmlFileModel>(graphContext,
                                 XmlFileModel.class);
-                        for(XPathExpression xpath: XMLXpathInterestFactory.registeredXpaths()) {
+                        for(Map.Entry<String,Map<String, String>> xpathEntry: XMLXpathInterestFactory.registeredXpaths().entrySet()) {
                             if (document != null)
                             {
+                                NamespaceMapContext nsContext = new NamespaceMapContext(xpathEntry.getValue());
+                                xpathEngine.setNamespaceContext(nsContext);
+                                XPathExpression compiledXPath = null;
+                                try {
+                                    compiledXPath = xpathEngine.compile(xpathEntry.getKey());
+
+                                } catch (Exception e) {
+                                    String message = e.getMessage();
+
+                                    // brutal hack to try to get a reasonable error message (ugly, but it seems to work)
+                                    if (message == null && e.getCause() != null && e.getCause().getMessage() != null) {
+                                        message = e.getCause().getMessage();
+                                    }
+                                    LOG.severe("Condition: " + this + " failed to run, as the following xpath was uncompilable: " + xpathEntry.getKey()
+                                            + " due to: "
+                                            + message);
+                                    continue;
+                                }
                                 final ParameterStore store = DefaultParameterStore.getInstance(context);
 
                                 final XmlFileParameterMatchCache paramMatchCache = new XmlFileParameterMatchCache();
@@ -86,11 +105,12 @@ public class XpathResultCacheProvider extends AbstractRuleProvider {
                                 xmlFileFunctionResolver.registerFunction(XmlFile.WINDUP_NS_URI, "matches", new XmlFileMatchesXPathFunction(context, store,
                                         paramMatchCache, event));
                                 xmlFileFunctionResolver.registerFunction(XmlFile.WINDUP_NS_URI, "persist", new XpathCachePersistFunction(event, context, payload,
-                                        store, paramMatchCache, resultLocations, xpath.toString()));
+                                        store, paramMatchCache, resultLocations, xpathEntry.getKey()));
                                 /**
                                  * This actually does the work.
                                  */
-                                XmlUtil.xpathNodeList(document, xpath);
+
+                                XmlUtil.xpathNodeList(document, compiledXPath);
                             }
                         }
                     }
@@ -148,12 +168,12 @@ public class XpathResultCacheProvider extends AbstractRuleProvider {
                 fileLocation.setColumnNumber(columnNumber);
                 fileLocation.setLength(node.toString().length());
                 fileLocation.setFile(xml);
-                for (Map.Entry<String, String> entry : paramMatchCache.getVariables(frameIdx).entrySet())
+               /* for (Map.Entry<String, String> entry : paramMatchCache.getVariables(frameIdx).entrySet())
                 {
                     Parameter<?> param = store.get(entry.getKey());
                     String value = entry.getValue();
                     xpathString.replaceAll("{ " + param.getName()+ "}", value);
-                }
+                }*/
                 fileLocation.setXpath(xpathString);
                 resultLocations.add(fileLocation);
             }

@@ -27,6 +27,7 @@ import org.jboss.windup.config.parameters.ParameterizedGraphCondition;
 import org.jboss.windup.graph.GraphContext;
 import org.jboss.windup.graph.model.WindupVertexFrame;
 import org.jboss.windup.graph.service.GraphService;
+import org.jboss.windup.rules.apps.xml.XpathResultCacheProvider;
 import org.jboss.windup.rules.apps.xml.condition.scan.XMLXpathInterestFactory;
 import org.jboss.windup.rules.apps.xml.model.DoctypeMetaModel;
 import org.jboss.windup.rules.apps.xml.model.NamespaceMetaModel;
@@ -325,6 +326,50 @@ public class XmlFile extends ParameterizedGraphCondition implements XmlFileDTD, 
             allXmls = Variables.instance(event).findVariable(getInputVariablesName());
         }
         Set<String> xmlCache = new HashSet<String>();
+        String xpathStringWithParameterFunctions = null;
+        if (xpathString != null)
+        {
+            //add windup specific funcion triggers into the xpath string
+            xpathStringWithParameterFunctions = XmlFileXPathTransformer.transformXPath(this.xpathString);
+            LOG.fine("XmlFile compiled: " + this.xpathString + " to " + xpathStringWithParameterFunctions);
+            if(XMLXpathInterestFactory.checkCacheForMatches(xpathStringWithParameterFunctions))
+            {
+                GraphService<XmlTypeReferenceModel> fileLocationService = new GraphService<XmlTypeReferenceModel>(
+                        event.getGraphContext(),
+                        XmlTypeReferenceModel.class);
+                Iterable<XmlTypeReferenceModel> cachedResult = fileLocationService.findAllByProperty(XmlTypeReferenceModel.XPATH, xpathStringWithParameterFunctions);
+                if(cachedResult.iterator().hasNext()) {
+                    for (XmlTypeReferenceModel model : cachedResult)
+                    {
+                        resultLocations.add(model);
+                        evaluationStrategy.modelSubmitted(model);
+                    }
+                }
+
+            }
+        }
+        if(resultLocations.isEmpty()) {
+
+            if (compiledXPath == null && xpathStringWithParameterFunctions!=null) {
+                NamespaceMapContext nsContext = new NamespaceMapContext(namespaces);
+                this.xpathEngine.setNamespaceContext(nsContext);
+                try {
+                    this.compiledXPath = xpathEngine.compile(xpathStringWithParameterFunctions);
+
+                } catch (Exception e) {
+                    String message = e.getMessage();
+
+                    // brutal hack to try to get a reasonable error message (ugly, but it seems to work)
+                    if (message == null && e.getCause() != null && e.getCause().getMessage() != null) {
+                        message = e.getCause().getMessage();
+                    }
+                    LOG.severe("Condition: " + this + " failed to run, as the following xpath was uncompilable: " + xpathString
+                            + " (compiled contents: " + xpathStringWithParameterFunctions + ") due to: "
+                            + message);
+                    return false;
+                }
+            }
+
         for (WindupVertexFrame iterated : allXmls)
         {
             final XmlFileModel xml;
@@ -390,9 +435,6 @@ public class XmlFile extends ParameterizedGraphCondition implements XmlFileDTD, 
             }
             if (xpathString != null)
             {
-                //add windup specific funcion triggers into the xpath string
-                String xpathStringWithParameterFunctions = XmlFileXPathTransformer.transformXPath(this.xpathString);
-                LOG.fine("XmlFile compiled: " + this.xpathString + " to " + xpathStringWithParameterFunctions);
 
                 XmlFileService xmlFileService = new XmlFileService(graphContext);
                 Document document = xmlFileService.loadDocumentQuiet(xml);
@@ -409,29 +451,6 @@ public class XmlFile extends ParameterizedGraphCondition implements XmlFileDTD, 
                     this.xmlFileFunctionResolver.registerFunction(WINDUP_NS_URI, "persist", new XmlFilePersistXPathFunction(event, context, xml,
                                 evaluationStrategy, store, paramMatchCache, resultLocations));
 
-                    if (compiledXPath == null)
-                    {
-                        NamespaceMapContext nsContext = new NamespaceMapContext(namespaces);
-                        this.xpathEngine.setNamespaceContext(nsContext);
-                        try
-                        {
-                            this.compiledXPath = xpathEngine.compile(xpathStringWithParameterFunctions);
-                        }
-                        catch (Exception e)
-                        {
-                            String message = e.getMessage();
-
-                            // brutal hack to try to get a reasonable error message (ugly, but it seems to work)
-                            if (message == null && e.getCause() != null && e.getCause().getMessage() != null)
-                            {
-                                message = e.getCause().getMessage();
-                            }
-                            LOG.severe("Condition: " + this + " failed to run, as the following xpath was uncompilable: " + xpathString
-                                        + " (compiled contents: " + xpathStringWithParameterFunctions + ") due to: "
-                                        + message);
-                            return false;
-                        }
-                    }
 
                     /**
                      * This actually does the work.
@@ -440,6 +459,7 @@ public class XmlFile extends ParameterizedGraphCondition implements XmlFileDTD, 
                     evaluationStrategy.modelSubmissionRejected();
                 }
             }
+        }
         }
         Variables.instance(event).setVariable(getOutputVariablesName(), resultLocations);
 
