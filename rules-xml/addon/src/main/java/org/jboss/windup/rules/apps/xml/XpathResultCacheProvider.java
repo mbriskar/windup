@@ -168,12 +168,6 @@ public class XpathResultCacheProvider extends AbstractRuleProvider {
                 fileLocation.setColumnNumber(columnNumber);
                 fileLocation.setLength(node.toString().length());
                 fileLocation.setFile(xml);
-               /* for (Map.Entry<String, String> entry : paramMatchCache.getVariables(frameIdx).entrySet())
-                {
-                    Parameter<?> param = store.get(entry.getKey());
-                    String value = entry.getValue();
-                    xpathString.replaceAll("{ " + param.getName()+ "}", value);
-                }*/
                 fileLocation.setXpath(xpathString);
                 resultLocations.add(fileLocation);
             }

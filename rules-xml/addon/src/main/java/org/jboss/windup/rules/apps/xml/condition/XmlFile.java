@@ -62,8 +62,6 @@ public class XmlFile extends ParameterizedGraphCondition implements XmlFileDTD, 
 {
     private static final Logger LOG = Logging.get(XmlFile.class);
 
-    protected static final String UNPARSEABLE_XML_CLASSIFICATION = "Unparseable XML File";
-    protected static final String UNPARSEABLE_XML_DESCRIPTION = "This file could not be parsed via XPath";
 
     public static final String WINDUP_NS_PREFIX = "windup";
     public static final String WINDUP_NS_URI = "http://windup.jboss.org/windupv2functions";
@@ -327,6 +325,7 @@ public class XmlFile extends ParameterizedGraphCondition implements XmlFileDTD, 
         }
         Set<String> xmlCache = new HashSet<String>();
         String xpathStringWithParameterFunctions = null;
+        boolean cacheHit=false;
         if (xpathString != null)
         {
             //add windup specific funcion triggers into the xpath string
@@ -334,6 +333,7 @@ public class XmlFile extends ParameterizedGraphCondition implements XmlFileDTD, 
             LOG.fine("XmlFile compiled: " + this.xpathString + " to " + xpathStringWithParameterFunctions);
             if(XMLXpathInterestFactory.checkCacheForMatches(xpathStringWithParameterFunctions))
             {
+                cacheHit=true;
                 GraphService<XmlTypeReferenceModel> fileLocationService = new GraphService<XmlTypeReferenceModel>(
                         event.getGraphContext(),
                         XmlTypeReferenceModel.class);
@@ -343,12 +343,13 @@ public class XmlFile extends ParameterizedGraphCondition implements XmlFileDTD, 
                     {
                         resultLocations.add(model);
                         evaluationStrategy.modelSubmitted(model);
+
                     }
                 }
 
             }
         }
-        if(resultLocations.isEmpty()) {
+        if(!cacheHit) {
 
             if (compiledXPath == null && xpathStringWithParameterFunctions!=null) {
                 NamespaceMapContext nsContext = new NamespaceMapContext(namespaces);
