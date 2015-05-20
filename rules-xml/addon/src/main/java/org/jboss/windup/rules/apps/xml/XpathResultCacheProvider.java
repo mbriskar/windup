@@ -81,42 +81,18 @@ public class XpathResultCacheProvider extends AbstractRuleProvider {
                                 NamespaceMapContext nsContext = new NamespaceMapContext(xpathEntry.getValue());
                                 xpathEngine.setNamespaceContext(nsContext);
                                 XPathExpression compiledXPath = null;
-                                try {
-                                    compiledXPath = xpathEngine.compile(xpathEntry.getKey());
 
-                                } catch (Exception e) {
-                                    String message = e.getMessage();
 
-                                    // brutal hack to try to get a reasonable error message (ugly, but it seems to work)
-                                    if (message == null && e.getCause() != null && e.getCause().getMessage() != null) {
-                                        message = e.getCause().getMessage();
-                                    }
-                                    LOG.severe("Condition: " + this + " failed to run, as the following xpath was uncompilable: " + xpathEntry.getKey()
-                                            + " due to: "
-                                            + message);
-                                    continue;
-                                }
-                                final ParameterStore store = DefaultParameterStore.getInstance(context);
-
-                                final XmlFileParameterMatchCache paramMatchCache = new XmlFileParameterMatchCache();
-                                //register windup specific functions that are going to be triggered by xpath engine if they occur in xpath
-                                xmlFileFunctionResolver.registerFunction(XmlFile.WINDUP_NS_URI, "startFrame", new XmlFileStartFrameXPathFunction(paramMatchCache));
-                                xmlFileFunctionResolver.registerFunction(XmlFile.WINDUP_NS_URI, "evaluate", new XmlFileEvaluateXPathFunction());
-                                xmlFileFunctionResolver.registerFunction(XmlFile.WINDUP_NS_URI, "matches", new XmlFileMatchesXPathFunction(context, store,
-                                        paramMatchCache, event));
-                                xmlFileFunctionResolver.registerFunction(XmlFile.WINDUP_NS_URI, "persist", new XpathCachePersistFunction(event, context, payload,
-                                        store, paramMatchCache, resultLocations, xpathEntry.getKey()));
-                                /**
-                                 * This actually does the work.
-                                 */
-
-                                XmlUtil.xpathNodeList(document, compiledXPath);
                             }
                         }
                     }
 
 
                 });
+    }
+
+    private void checkXmlNode() {
+
     }
 
     final class XpathCachePersistFunction implements XPathFunction

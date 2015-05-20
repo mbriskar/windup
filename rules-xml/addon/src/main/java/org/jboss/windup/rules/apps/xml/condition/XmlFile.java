@@ -81,6 +81,7 @@ public class XmlFile extends ParameterizedGraphCondition implements XmlFileDTD, 
     private RegexParameterizedPatternParser xpathPattern;
 
     private RegexParameterizedPatternParser fileNamePattern;
+    private String xpathStringWithParameterFunctions;
 
     public void setXpathResultMatch(String xpathResultMatch)
     {
@@ -324,39 +325,24 @@ public class XmlFile extends ParameterizedGraphCondition implements XmlFileDTD, 
             allXmls = Variables.instance(event).findVariable(getInputVariablesName());
         }
         Set<String> xmlCache = new HashSet<String>();
-        String xpathStringWithParameterFunctions = null;
         boolean cacheHit=false;
         if (xpathString != null)
         {
             //add windup specific funcion triggers into the xpath string
-            xpathStringWithParameterFunctions = XmlFileXPathTransformer.transformXPath(this.xpathString);
+            this.xpathStringWithParameterFunctions = XmlFileXPathTransformer.transformXPath(this.xpathString);
             LOG.fine("XmlFile compiled: " + this.xpathString + " to " + xpathStringWithParameterFunctions);
-            if(XMLXpathInterestFactory.checkCacheForMatches(xpathStringWithParameterFunctions))
-            {
-                cacheHit=true;
-                GraphService<XmlTypeReferenceModel> fileLocationService = new GraphService<XmlTypeReferenceModel>(
-                        event.getGraphContext(),
-                        XmlTypeReferenceModel.class);
-                Iterable<XmlTypeReferenceModel> cachedResult = fileLocationService.findAllByProperty(XmlTypeReferenceModel.XPATH, xpathStringWithParameterFunctions);
-                if(cachedResult.iterator().hasNext()) {
-                    for (XmlTypeReferenceModel model : cachedResult)
-                    {
-                        resultLocations.add(model);
-                        evaluationStrategy.modelSubmitted(model);
-
-                    }
-                }
-
-            }
         }
-        if(!cacheHit) {
-
+        List<WindupVertexFrame> cachedResults = checkCachedResults(event);
+        if(!cachedResults.isEmpty()) {
+            for(WindupVertexFrame frame : cachedResults) {
+                evaluationStrategy.modelSubmitted(frame);
+            }
+        } else {
             if (compiledXPath == null && xpathStringWithParameterFunctions!=null) {
                 NamespaceMapContext nsContext = new NamespaceMapContext(namespaces);
                 this.xpathEngine.setNamespaceContext(nsContext);
                 try {
                     this.compiledXPath = xpathEngine.compile(xpathStringWithParameterFunctions);
-
                 } catch (Exception e) {
                     String message = e.getMessage();
 
@@ -468,6 +454,25 @@ public class XmlFile extends ParameterizedGraphCondition implements XmlFileDTD, 
 
         ExecutionStatistics.get().end("XmlFile.evaluate");
         return !resultLocations.isEmpty();
+    }
+
+    private List<WindupVertexFrame> checkCachedResults(GraphRewrite event) {
+        List<WindupVertexFrame> results = new ArrayList<WindupVertexFrame>();
+        if(XMLXpathInterestFactory.checkCacheForMatches(xpathStringWithParameterFunctions))
+        {
+            GraphService<XmlTypeReferenceModel> fileLocationService = new GraphService<XmlTypeReferenceModel>(
+                    event.getGraphContext(),
+                    XmlTypeReferenceModel.class);
+            Iterable<XmlTypeReferenceModel> cachedResult = fileLocationService.findAllByProperty(XmlTypeReferenceModel.XPATH, xpathStringWithParameterFunctions);
+            if(cachedResult.iterator().hasNext()) {
+                for (XmlTypeReferenceModel model : cachedResult)
+                {
+                    results.add(model);
+                }
+            }
+
+        }
+        return results;
     }
 
     public XmlFileNamespace namespace(String prefix, String url)
