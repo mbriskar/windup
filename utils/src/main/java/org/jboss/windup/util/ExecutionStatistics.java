@@ -3,6 +3,7 @@ package org.jboss.windup.util;
 import java.io.FileWriter;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -29,8 +30,9 @@ public class ExecutionStatistics
 {
     private static Logger LOG = Logging.get(ExecutionStatistics.class);
 
-    private static ThreadLocal<ExecutionStatistics> stats = new ThreadLocal<>();
+    private static Map<Thread,ExecutionStatistics> stats = new HashMap<>();
     private Map<String, TimingData> executionInfo = new HashMap<>();
+
 
     private ExecutionStatistics()
     {
@@ -42,11 +44,49 @@ public class ExecutionStatistics
      */
     public static synchronized ExecutionStatistics get()
     {
-        if (stats.get() == null)
+        if (stats.get(Thread.currentThread()) == null)
         {
-            stats.set(new ExecutionStatistics());
+            stats.put(Thread.currentThread(),new ExecutionStatistics());
         }
-        return stats.get();
+        return stats.get(Thread.currentThread());
+    }
+
+    public static synchronized ExecutionStatistics get(Thread thread)
+    {
+        return stats.get(thread);
+    }
+
+
+    public void clear(Iterable<Thread> threads) {
+        for (Thread thread : threads)
+        {
+            stats.remove(thread);
+        }
+    }
+
+    public ExecutionStatistics mergeSiblingThreads() {
+        int numberOfSiblingThreads = Thread.currentThread().getThreadGroup().activeCount();
+        Thread[] threads = new Thread[numberOfSiblingThreads];
+        Thread.currentThread().getThreadGroup().enumerate(threads);
+        for(int i=0;i<threads.length;i++) {
+            merge(stats.get(threads[i]));
+        }
+        return this;
+    }
+
+
+    public void merge(ExecutionStatistics statistics) {
+        for (String key : statistics.executionInfo.keySet())
+        {
+            TimingData otherTimingData = statistics.executionInfo.get(key);
+            TimingData currentTimingData = executionInfo.get(key);
+            if(currentTimingData == null) {
+                executionInfo.put(key,otherTimingData);
+            } else {
+                currentTimingData.merge(otherTimingData);
+                executionInfo.put(key, currentTimingData);
+            }
+        }
     }
 
     /**
@@ -54,7 +94,7 @@ public class ExecutionStatistics
      */
     public void reset()
     {
-        stats.set(null);
+        stats.remove(Thread.currentThread());
         executionInfo.clear();
     }
 
@@ -159,6 +199,11 @@ public class ExecutionStatistics
             this.totalNanos += (System.nanoTime() - startTime);
             this.startTime = 0;
             this.numberOfExecutions++;
+        }
+
+        public void merge(TimingData other) {
+            this.numberOfExecutions += other.numberOfExecutions;
+            this.totalNanos = other.totalNanos;
         }
     }
 }

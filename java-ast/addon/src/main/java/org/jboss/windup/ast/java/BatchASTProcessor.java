@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,6 +18,8 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FileASTRequestor;
+import org.jboss.windup.util.ExecutionStatistics;
+import org.jboss.windup.util.threading.ThreadGroupThreadFactory;
 
 /**
  * Processes multiple files at a time in order to improve performance.
@@ -35,11 +38,13 @@ public class BatchASTProcessor
                 final Set<String> libraryPaths,
                 final Set<String> sourcePaths, Set<Path> sourceFiles)
     {
-        final ExecutorService executor = Executors.newFixedThreadPool(THREADPOOL_SIZE);
 
         final String[] encodings = null;
         final String[] bindingKeys = new String[0];
-
+        String threadGroupName = Thread.currentThread().getName() + UUID.randomUUID();
+        ThreadGroup subThreadGroup = new ThreadGroup(threadGroupName);
+        ThreadGroupThreadFactory factory = new ThreadGroupThreadFactory(subThreadGroup);
+        final ExecutorService executor = Executors.newFixedThreadPool(THREADPOOL_SIZE,factory);
         final FileASTRequestor requestor = new FileASTRequestor()
         {
             @Override
@@ -103,6 +108,7 @@ public class BatchASTProcessor
         }
 
         executor.shutdown();
+
         return new BatchASTFuture()
         {
             @Override
