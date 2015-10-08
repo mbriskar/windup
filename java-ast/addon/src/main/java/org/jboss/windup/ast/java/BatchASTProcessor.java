@@ -18,8 +18,7 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FileASTRequestor;
-import org.jboss.windup.util.ExecutionStatistics;
-import org.jboss.windup.util.threading.ThreadGroupThreadFactory;
+import org.jboss.windup.util.threading.WindupChildThreadFactory;
 
 /**
  * Processes multiple files at a time in order to improve performance.
@@ -43,7 +42,7 @@ public class BatchASTProcessor
         final String[] bindingKeys = new String[0];
         String threadGroupName = Thread.currentThread().getName() + UUID.randomUUID();
         ThreadGroup subThreadGroup = new ThreadGroup(threadGroupName);
-        ThreadGroupThreadFactory factory = new ThreadGroupThreadFactory(subThreadGroup);
+        WindupChildThreadFactory factory = new WindupChildThreadFactory(subThreadGroup);
         final ExecutorService executor = Executors.newFixedThreadPool(THREADPOOL_SIZE,factory);
         final FileASTRequestor requestor = new FileASTRequestor()
         {

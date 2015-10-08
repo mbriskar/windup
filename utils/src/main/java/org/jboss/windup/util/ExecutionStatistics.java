@@ -1,10 +1,13 @@
 package org.jboss.windup.util;
 
+import org.jboss.windup.util.threading.WindupChildThread;
+
 import java.io.FileWriter;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 /**
@@ -30,7 +33,7 @@ public class ExecutionStatistics
 {
     private static Logger LOG = Logging.get(ExecutionStatistics.class);
 
-    private static Map<Thread,ExecutionStatistics> stats = new HashMap<>();
+    private static Map<Thread,ExecutionStatistics> stats = new ConcurrentHashMap<>();
     private Map<String, TimingData> executionInfo = new HashMap<>();
 
 
@@ -44,48 +47,21 @@ public class ExecutionStatistics
      */
     public static synchronized ExecutionStatistics get()
     {
-        if (stats.get(Thread.currentThread()) == null)
-        {
-            stats.put(Thread.currentThread(),new ExecutionStatistics());
+        Thread currentThread = Thread.currentThread();
+        if(currentThread instanceof WindupChildThread) {
+            currentThread=((WindupChildThread) currentThread).getParentThread();
         }
-        return stats.get(Thread.currentThread());
+        if (stats.get(currentThread) == null)
+        {
+            stats.put(currentThread,new ExecutionStatistics());
+        }
+        return stats.get(currentThread);
     }
-
-    public static synchronized ExecutionStatistics get(Thread thread)
-    {
-        return stats.get(thread);
-    }
-
 
     public void clear(Iterable<Thread> threads) {
         for (Thread thread : threads)
         {
             stats.remove(thread);
-        }
-    }
-
-    public ExecutionStatistics mergeSiblingThreads() {
-        int numberOfSiblingThreads = Thread.currentThread().getThreadGroup().activeCount();
-        Thread[] threads = new Thread[numberOfSiblingThreads];
-        Thread.currentThread().getThreadGroup().enumerate(threads);
-        for(int i=0;i<threads.length;i++) {
-            merge(stats.get(threads[i]));
-        }
-        return this;
-    }
-
-
-    public void merge(ExecutionStatistics statistics) {
-        for (String key : statistics.executionInfo.keySet())
-        {
-            TimingData otherTimingData = statistics.executionInfo.get(key);
-            TimingData currentTimingData = executionInfo.get(key);
-            if(currentTimingData == null) {
-                executionInfo.put(key,otherTimingData);
-            } else {
-                currentTimingData.merge(otherTimingData);
-                executionInfo.put(key, currentTimingData);
-            }
         }
     }
 

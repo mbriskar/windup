@@ -76,7 +76,6 @@ public class ExecutionTimeReportRuleProvider extends AbstractRuleProvider
                             }
 
                             Path detailedExecutionStatsOutputPath = statsDir.resolve("detailed_stats.csv");
-                            ExecutionStatistics.get().mergeSiblingThreads();
                             ExecutionStatistics.get().serializeTimingData(detailedExecutionStatsOutputPath);
 
                             Path ruleTimingOutputPath = statsDir.resolve("timing.txt");
